@@ -1,0 +1,38 @@
+{
+  "hazard": "Landslides",
+  "task": "Rainfall-Triggered Landslide Occurrence & Hillslope Failure Susceptibility",
+  "dataset_file": "data/model_ready/landslides\\landslide_model_ready.csv",
+  "record_count": 600,
+  "feature_count": 14,
+  "provenance_status": "AUTHENTIC_VERIFIED",
+  "input_features": [
+    "precip_1d_mm",
+    "precip_3d_sum_mm",
+    "precip_7d_sum_mm",
+    "precip_30d_sum_mm",
+    "api_30d_index",
+    "temp_2m_celsius",
+    "soil_temp_celsius",
+    "slope_degrees",
+    "elevation_m",
+    "aspect_degrees",
+    "plan_curvature",
+    "soil_clay_fraction_pct",
+    "distance_to_road_km",
+    "distance_to_stream_km"
+  ],
+  "target_variables": {
+    "landslide_occurred": "Binary indicator (1 = Landslide Event, 0 = Stable Slope Paired Control)",
+    "hazard_magnitude_class": "Multi-class severity (0 = None, 1 = Small/Medium, 2 = Large/Catastrophic)"
+  },
+  "validation_strategy": "Chronological Split: train (<2014), val (2014-2015), test (>=2016)",
+  "environmental_apis_verified": [
+    "ECMWF ERA5 Reanalysis (Open-Meteo)",
+    "Copernicus DEM GLO-90"
+  ],
+  "class_balance": {
+    "positive_count": 300,
+    "negative_count": 300,
+    "balance_ratio": "1.00 : 1.00"
+  }
+}

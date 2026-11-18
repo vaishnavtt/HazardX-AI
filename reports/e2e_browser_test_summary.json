@@ -1,0 +1,67 @@
+{
+  "pagesTested": [
+    "Dashboard (/)",
+    "Global Hazard Map (/map)",
+    "Forecasts (/forecasts)",
+    "Check My Location (/check-location)",
+    "Active Alerts (/alerts)",
+    "Past Events (/past-events)",
+    "About (/about)"
+  ],
+  "tests": [
+    {
+      "name": "Dashboard Header Brand",
+      "pass": true
+    },
+    {
+      "name": "Liquid Glass Elements",
+      "pass": true
+    },
+    {
+      "name": "Map Container Mounted",
+      "pass": true
+    },
+    {
+      "name": "Map Layer Toggles",
+      "pass": true
+    },
+    {
+      "name": "Map Resize Handler",
+      "pass": true
+    },
+    {
+      "name": "Forecast Cards Rendered",
+      "pass": true
+    },
+    {
+      "name": "Technical Data Sources Accordion",
+      "pass": true
+    },
+    {
+      "name": "Preset Location Assessment Execution",
+      "pass": true
+    },
+    {
+      "name": "Active Alerts List & Summary",
+      "pass": true
+    },
+    {
+      "name": "Alert Filtering",
+      "pass": true
+    },
+    {
+      "name": "Past Events List Render",
+      "pass": true
+    },
+    {
+      "name": "About Page Content Verification",
+      "pass": true
+    },
+    {
+      "name": "Map Does Not Become Blank on Navigation",
+      "pass": true
+    }
+  ],
+  "consoleErrors": [],
+  "networkFailures": []
+}

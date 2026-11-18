@@ -1,0 +1,108 @@
+{
+  "hazard": "earthquakes",
+  "hazard_name": "Earthquakes",
+  "task_name": "max_aftershock_mag",
+  "task_type": "regression",
+  "target_column": "max_aftershock_mag_30d",
+  "description": "30-Day Maximum Aftershock Magnitude Regression (Mw)",
+  "features": [
+    "mainshock_mag",
+    "focal_depth_km",
+    "dist_to_active_fault_km",
+    "nearest_fault_slip_type",
+    "prior_count_7d_100km",
+    "prior_count_30d_100km",
+    "prior_count_365d_100km",
+    "prior_max_mag_30d",
+    "cumulative_energy_log_joules",
+    "seismic_rate_accel_ratio",
+    "regional_b_value"
+  ],
+  "feature_count": 11,
+  "train_samples": 7255,
+  "val_samples": 1207,
+  "test_samples": 1538,
+  "best_hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 3,
+    "learning_rate": 0.08,
+    "subsample": 0.9,
+    "colsample_bytree": 0.9,
+    "min_child_weight": 3,
+    "reg_lambda": 10.0,
+    "gamma": 0.5,
+    "scale_pos_weight": 1.0
+  },
+  "validation_metrics": {
+    "mae": 1.5948980627774996,
+    "rmse": 1.9669793321834252,
+    "r2": 0.31197043283083536,
+    "median_absolute_error": 1.270034599304199,
+    "explained_variance": 0.3524150645893117
+  },
+  "initial_validation_metrics": {
+    "mae": 1.604269343848281,
+    "rmse": 1.9888026843266462,
+    "r2": 0.29661856153131605,
+    "median_absolute_error": 1.2419626235961916,
+    "explained_variance": 0.3335793278426823
+  },
+  "baseline_validation_metrics": {
+    "mae": 2.3331120085739228,
+    "rmse": 2.3715201763396925,
+    "r2": -0.0001408276091563465,
+    "median_absolute_error": 2.4071219848380423,
+    "explained_variance": 0.0
+  },
+  "unweighted_validation_metrics": null,
+  "test_metrics": {
+    "mae": 1.5612392518137461,
+    "rmse": 1.9448762568505666,
+    "r2": 0.3438756002490938,
+    "median_absolute_error": 1.2829232811927795,
+    "explained_variance": 0.3519338686691672
+  },
+  "initial_test_metrics": {
+    "mae": 1.5481854171140703,
+    "rmse": 1.9475740871770404,
+    "r2": 0.34205405504711306,
+    "median_absolute_error": 1.1899665713310243,
+    "explained_variance": 0.3475731420382593
+  },
+  "baseline_test_metrics": {
+    "mae": 2.3721345065821606,
+    "rmse": 2.418179339997434,
+    "r2": -0.014329957713714148,
+    "median_absolute_error": 2.4071219848380423,
+    "explained_variance": 0.0
+  },
+  "top_features_shap": [
+    {
+      "feature": "prior_count_365d_100km",
+      "mean_abs_shap": 0.8223237991333008
+    },
+    {
+      "feature": "focal_depth_km",
+      "mean_abs_shap": 0.26449114084243774
+    },
+    {
+      "feature": "cumulative_energy_log_joules",
+      "mean_abs_shap": 0.20090647041797638
+    },
+    {
+      "feature": "nearest_fault_slip_type",
+      "mean_abs_shap": 0.18152940273284912
+    },
+    {
+      "feature": "regional_b_value",
+      "mean_abs_shap": 0.16200584173202515
+    }
+  ],
+  "artifact_joblib": "C:\\Users\\thott\\Desktop\\hazardai\\models\\earthquakes\\earthquakes_max_aftershock_mag_xgboost.joblib",
+  "artifact_json": "C:\\Users\\thott\\Desktop\\hazardai\\models\\earthquakes\\earthquakes_max_aftershock_mag_xgboost.json",
+  "eval_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\figures\\earthquakes_max_aftershock_mag_regression_diagnostic.png",
+  "shap_summary_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\earthquakes_max_aftershock_mag_shap_summary.png",
+  "shap_bar_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\earthquakes_max_aftershock_mag_shap_bar.png",
+  "version": "1.0.0",
+  "training_timestamp": "2026-11-17T19:22:29.887333"
+}

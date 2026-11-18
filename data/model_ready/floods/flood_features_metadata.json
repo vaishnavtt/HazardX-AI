@@ -1,0 +1,39 @@
+{
+  "hazard": "Floods",
+  "task": "Flood Susceptibility & Extent Classification",
+  "dataset_file": "data/model_ready/floods\\flood_model_ready.csv",
+  "record_count": 600,
+  "feature_count": 14,
+  "provenance_status": "AUTHENTIC_VERIFIED",
+  "input_features": [
+    "precip_1d_mm",
+    "precip_3d_sum_mm",
+    "precip_7d_sum_mm",
+    "precip_14d_sum_mm",
+    "api_14d_index",
+    "temp_2m_celsius",
+    "soil_temp_celsius",
+    "river_discharge_m3s",
+    "river_discharge_7d_mean_m3s",
+    "river_discharge_ratio_7d",
+    "elevation_m",
+    "slope_degrees",
+    "topographic_wetness_index",
+    "distance_to_river_km"
+  ],
+  "target_variables": {
+    "flood_occurred": "Binary indicator (1 = Flood Event, 0 = Non-Flood Paired Control)",
+    "severity_class": "Multi-class severity (0 = None, 1 = Large, 2 = Extreme/Decadal)"
+  },
+  "validation_strategy": "Chronological Split: train (<2017), val (2017-2020), test (>=2021)",
+  "environmental_apis_verified": [
+    "ECMWF ERA5 Reanalysis (Open-Meteo)",
+    "Copernicus GloFAS v4.0",
+    "Copernicus DEM GLO-90"
+  ],
+  "class_balance": {
+    "positive_count": 300,
+    "negative_count": 300,
+    "balance_ratio": "1.00 : 1.00"
+  }
+}

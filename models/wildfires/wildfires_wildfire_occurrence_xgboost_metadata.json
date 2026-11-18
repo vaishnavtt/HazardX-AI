@@ -1,0 +1,161 @@
+{
+  "hazard": "wildfires",
+  "hazard_name": "Wildfires",
+  "task_name": "wildfire_occurrence",
+  "task_type": "binary_classification",
+  "target_column": "wildfire_occurred",
+  "description": "Wildfire Ignition / Occurrence Susceptibility Classification",
+  "features": [
+    "temp_2m_celsius",
+    "relative_humidity_pct",
+    "wind_speed_10m_ms",
+    "precip_7d_sum_mm",
+    "precip_30d_sum_mm",
+    "soil_temp_celsius",
+    "fwi_fire_weather_index",
+    "slope_degrees",
+    "elevation_m",
+    "distance_to_road_km"
+  ],
+  "feature_count": 10,
+  "train_samples": 930,
+  "val_samples": 174,
+  "test_samples": 96,
+  "best_hyperparameters": {
+    "n_estimators": 250,
+    "max_depth": 7,
+    "learning_rate": 0.02,
+    "subsample": 0.7,
+    "colsample_bytree": 0.9,
+    "min_child_weight": 1,
+    "reg_lambda": 0.1,
+    "gamma": 0.0,
+    "scale_pos_weight": 1.0
+  },
+  "validation_metrics": {
+    "accuracy": 0.7413793103448276,
+    "precision": 0.675,
+    "recall": 0.9310344827586207,
+    "sensitivity": 0.9310344827586207,
+    "specificity": 0.5517241379310345,
+    "f1": 0.782608695652174,
+    "f1_macro": 0.7317298797409806,
+    "tn": 48,
+    "fp": 39,
+    "fn": 6,
+    "tp": 81,
+    "roc_auc": 0.859426608534813,
+    "pr_auc": 0.8305149332635483,
+    "brier_score": 0.18151188469688515
+  },
+  "initial_validation_metrics": {
+    "accuracy": 0.7586206896551724,
+    "precision": 0.6923076923076923,
+    "recall": 0.9310344827586207,
+    "sensitivity": 0.9310344827586207,
+    "specificity": 0.5862068965517241,
+    "f1": 0.7941176470588235,
+    "f1_macro": 0.7512254901960784,
+    "tn": 51,
+    "fp": 36,
+    "fn": 6,
+    "tp": 81,
+    "roc_auc": 0.8526885982296207,
+    "pr_auc": 0.814499194791414,
+    "brier_score": 0.18375069192123586
+  },
+  "baseline_validation_metrics": {
+    "accuracy": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "sensitivity": 0.0,
+    "specificity": 1.0,
+    "f1": 0.0,
+    "f1_macro": 0.3333333333333333,
+    "tn": 87,
+    "fp": 0,
+    "fn": 87,
+    "tp": 0,
+    "roc_auc": 0.5,
+    "pr_auc": 0.5,
+    "brier_score": 0.25
+  },
+  "unweighted_validation_metrics": null,
+  "test_metrics": {
+    "accuracy": 0.7395833333333334,
+    "precision": 0.7446808510638298,
+    "recall": 0.7291666666666666,
+    "sensitivity": 0.7291666666666666,
+    "specificity": 0.75,
+    "f1": 0.7368421052631579,
+    "f1_macro": 0.7395550732501357,
+    "tn": 36,
+    "fp": 12,
+    "fn": 13,
+    "tp": 35,
+    "roc_auc": 0.8246527777777778,
+    "pr_auc": 0.8272004271281286,
+    "brier_score": 0.19726795605186456
+  },
+  "initial_test_metrics": {
+    "accuracy": 0.7083333333333334,
+    "precision": 0.6923076923076923,
+    "recall": 0.75,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666,
+    "f1": 0.72,
+    "f1_macro": 0.7078260869565217,
+    "tn": 32,
+    "fp": 16,
+    "fn": 12,
+    "tp": 36,
+    "roc_auc": 0.8107638888888888,
+    "pr_auc": 0.8038462843981946,
+    "brier_score": 0.20833275322729106
+  },
+  "baseline_test_metrics": {
+    "accuracy": 0.5,
+    "precision": 0.0,
+    "recall": 0.0,
+    "sensitivity": 0.0,
+    "specificity": 1.0,
+    "f1": 0.0,
+    "f1_macro": 0.3333333333333333,
+    "tn": 48,
+    "fp": 0,
+    "fn": 48,
+    "tp": 0,
+    "roc_auc": 0.5,
+    "pr_auc": 0.5,
+    "brier_score": 0.25
+  },
+  "top_features_shap": [
+    {
+      "feature": "temp_2m_celsius",
+      "mean_abs_shap": 2.0870535373687744
+    },
+    {
+      "feature": "relative_humidity_pct",
+      "mean_abs_shap": 0.7663202881813049
+    },
+    {
+      "feature": "fwi_fire_weather_index",
+      "mean_abs_shap": 0.41161489486694336
+    },
+    {
+      "feature": "soil_temp_celsius",
+      "mean_abs_shap": 0.39785608649253845
+    },
+    {
+      "feature": "precip_30d_sum_mm",
+      "mean_abs_shap": 0.35266971588134766
+    }
+  ],
+  "artifact_joblib": "C:\\Users\\thott\\Desktop\\hazardai\\models\\wildfires\\wildfires_wildfire_occurrence_xgboost.joblib",
+  "artifact_json": "C:\\Users\\thott\\Desktop\\hazardai\\models\\wildfires\\wildfires_wildfire_occurrence_xgboost.json",
+  "eval_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\figures\\wildfires_wildfire_occurrence_eval_plots.png",
+  "shap_summary_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\wildfires_wildfire_occurrence_shap_summary.png",
+  "shap_bar_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\wildfires_wildfire_occurrence_shap_bar.png",
+  "version": "1.0.0",
+  "training_timestamp": "2026-11-17T19:23:25.336170"
+}

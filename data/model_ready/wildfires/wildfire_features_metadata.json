@@ -1,0 +1,39 @@
+{
+  "hazard": "Wildfires",
+  "task": "Wildfire Ignition Susceptibility & Fire Radiative Power (FRP) Intensity Modeling",
+  "dataset_file": "data/model_ready/wildfires\\wildfire_model_ready.csv",
+  "record_count": 1200,
+  "feature_count": 10,
+  "provenance_status": "AUTHENTIC_VERIFIED",
+  "historical_catalogs": [
+    "Canadian National Fire Database (CWFIS NFDB, 1980-2024)",
+    "UN GLIDE Wildfire Disasters (1991-2026)"
+  ],
+  "input_features": [
+    "temp_2m_celsius",
+    "relative_humidity_pct",
+    "wind_speed_10m_ms",
+    "precip_7d_sum_mm",
+    "precip_30d_sum_mm",
+    "soil_temp_celsius",
+    "fwi_fire_weather_index",
+    "slope_degrees",
+    "elevation_m",
+    "distance_to_road_km"
+  ],
+  "target_variables": {
+    "wildfire_occurred": "Binary indicator (1 = Verified Wildfire Event, 0 = Non-Fire Control)",
+    "log_total_frp_mw": "Continuous log10 Fire Radiative Power / Fire Intensity Proxy",
+    "fire_duration_days": "Duration of burning episode"
+  },
+  "validation_strategy": "Spatial Block Split across continental quadrants (Americas, EMEA, APAC)",
+  "environmental_apis_verified": [
+    "ECMWF ERA5 Reanalysis (Open-Meteo)",
+    "Copernicus DEM GLO-90"
+  ],
+  "class_balance": {
+    "positive_count": 600,
+    "negative_count": 600,
+    "balance_ratio": "1.00 : 1.00"
+  }
+}

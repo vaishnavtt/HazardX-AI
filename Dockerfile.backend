@@ -1,0 +1,41 @@
+# HAZARDX AI — Backend Dockerfile
+# Python 3.11 with OpenMP support for XGBoost multi-threaded inference
+
+FROM python:3.11-slim
+
+LABEL maintainer="HAZARDX AI Engineering Team"
+LABEL description="HAZARDX AI Multi-Hazard Early Warning REST Backend"
+
+# Prevent Python from writing .pyc files and enable unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+# Install system dependencies (libgomp1 required for XGBoost OpenMP execution)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy application backend, trained models, and database directory
+COPY backend /app/backend
+COPY models /app/models
+COPY data /app/data
+
+# Expose backend port
+EXPOSE 8000
+
+# Healthcheck probe against FastAPI root health endpoint
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+
+# Default command: launch production Uvicorn server with 2 workers
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+

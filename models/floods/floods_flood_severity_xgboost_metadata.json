@@ -1,0 +1,219 @@
+{
+  "hazard": "floods",
+  "hazard_name": "Floods",
+  "task_name": "flood_severity",
+  "task_type": "multiclass_classification",
+  "target_column": "severity_class",
+  "description": "Flood Severity Class (0 = None, 1 = Large, 2 = Extreme/Decadal)",
+  "features": [
+    "precip_1d_mm",
+    "precip_3d_sum_mm",
+    "precip_7d_sum_mm",
+    "precip_14d_sum_mm",
+    "api_14d_index",
+    "temp_2m_celsius",
+    "soil_temp_celsius",
+    "river_discharge_m3s",
+    "river_discharge_7d_mean_m3s",
+    "river_discharge_ratio_7d",
+    "elevation_m",
+    "slope_degrees",
+    "topographic_wetness_index",
+    "distance_to_river_km"
+  ],
+  "feature_count": 14,
+  "train_samples": 486,
+  "val_samples": 33,
+  "test_samples": 81,
+  "best_hyperparameters": {
+    "n_estimators": 250,
+    "max_depth": 7,
+    "learning_rate": 0.02,
+    "subsample": 1.0,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 3,
+    "reg_lambda": 0.1,
+    "gamma": 0.5,
+    "scale_pos_weight": 1.0
+  },
+  "validation_metrics": {
+    "accuracy": 0.8484848484848485,
+    "f1_macro": 0.847926267281106,
+    "f1_weighted": 0.8482055578829772,
+    "precision_macro": 0.8500000000000001,
+    "recall_macro": 0.8474264705882353,
+    "confusion_matrix": [
+      [
+        13,
+        3,
+        0
+      ],
+      [
+        2,
+        15,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "initial_validation_metrics": {
+    "accuracy": 0.7878787878787878,
+    "f1_macro": 0.7878787878787878,
+    "f1_weighted": 0.7878787878787878,
+    "precision_macro": 0.7886029411764706,
+    "recall_macro": 0.7886029411764706,
+    "confusion_matrix": [
+      [
+        13,
+        3,
+        0
+      ],
+      [
+        4,
+        13,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "baseline_validation_metrics": {
+    "accuracy": 0.48484848484848486,
+    "f1_macro": 0.32653061224489793,
+    "f1_weighted": 0.31663574520717375,
+    "precision_macro": 0.24242424242424243,
+    "recall_macro": 0.5,
+    "confusion_matrix": [
+      [
+        16,
+        0,
+        0
+      ],
+      [
+        17,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "unweighted_validation_metrics": null,
+  "test_metrics": {
+    "accuracy": 0.7530864197530864,
+    "f1_macro": 0.7527472527472527,
+    "f1_weighted": 0.7526341970786415,
+    "precision_macro": 0.7555282555282555,
+    "recall_macro": 0.7536585365853659,
+    "confusion_matrix": [
+      [
+        32,
+        8,
+        0
+      ],
+      [
+        12,
+        29,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "initial_test_metrics": {
+    "accuracy": 0.7283950617283951,
+    "f1_macro": 0.48782249742002065,
+    "f1_weighted": 0.7314719260023698,
+    "precision_macro": 0.4941798941798942,
+    "recall_macro": 0.48617886178861786,
+    "confusion_matrix": [
+      [
+        32,
+        8,
+        0
+      ],
+      [
+        13,
+        27,
+        1
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "baseline_test_metrics": {
+    "accuracy": 0.49382716049382713,
+    "f1_macro": 0.3305785123966942,
+    "f1_weighted": 0.3264972961942659,
+    "precision_macro": 0.24691358024691357,
+    "recall_macro": 0.5,
+    "confusion_matrix": [
+      [
+        40,
+        0,
+        0
+      ],
+      [
+        41,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "roc_auc": 0.5
+  },
+  "top_features_shap": [
+    {
+      "feature": "precip_3d_sum_mm",
+      "mean_abs_shap": 0.30227944254875183
+    },
+    {
+      "feature": "precip_14d_sum_mm",
+      "mean_abs_shap": 0.17435447871685028
+    },
+    {
+      "feature": "temp_2m_celsius",
+      "mean_abs_shap": 0.15200097858905792
+    },
+    {
+      "feature": "soil_temp_celsius",
+      "mean_abs_shap": 0.1473793387413025
+    },
+    {
+      "feature": "precip_1d_mm",
+      "mean_abs_shap": 0.13912935554981232
+    }
+  ],
+  "artifact_joblib": "C:\\Users\\thott\\Desktop\\hazardai\\models\\floods\\floods_flood_severity_xgboost.joblib",
+  "artifact_json": "C:\\Users\\thott\\Desktop\\hazardai\\models\\floods\\floods_flood_severity_xgboost.json",
+  "eval_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\figures\\floods_flood_severity_confusion_matrix.png",
+  "shap_summary_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\floods_flood_severity_shap_summary.png",
+  "shap_bar_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\floods_flood_severity_shap_bar.png",
+  "version": "1.0.0",
+  "training_timestamp": "2026-11-17T19:21:45.655538"
+}

@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches and temporary outputs
+.pytest_cache/
+*.log
+
+# Project Archives
+_archive/
+
+# Environmental raw caches
+data/raw/environmental/extracted/*.json
+
+# Large Raw Data Files & Bulk Processing Caches
+data/raw/
+data/processed/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment and secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Node / Frontend builds
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.vite/
+
+# Database journals and locks
+*.db-journal
+*.sqlite3-journal
+*.db-wal
+*.db-shm
+
+# IDE / OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

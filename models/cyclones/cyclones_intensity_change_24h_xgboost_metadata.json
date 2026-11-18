@@ -1,0 +1,108 @@
+{
+  "hazard": "cyclones",
+  "hazard_name": "Cyclones",
+  "task_name": "intensity_change_24h",
+  "task_type": "regression",
+  "target_column": "delta_wind_24h",
+  "description": "24-Hour Continuous Wind Intensity Change Regression (knots)",
+  "features": [
+    "current_wind_kt",
+    "current_pres_hpa",
+    "dist_to_land_km",
+    "landfall_flag",
+    "past_delta_wind_6h",
+    "past_delta_wind_12h",
+    "past_delta_pres_6h",
+    "translational_speed_kt",
+    "heading_degrees",
+    "coriolis_param",
+    "pot_intensity_headroom"
+  ],
+  "feature_count": 11,
+  "train_samples": 177798,
+  "val_samples": 20930,
+  "test_samples": 21756,
+  "best_hyperparameters": {
+    "n_estimators": 250,
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "subsample": 0.8,
+    "colsample_bytree": 1.0,
+    "min_child_weight": 7,
+    "reg_lambda": 0.1,
+    "gamma": 0.0,
+    "scale_pos_weight": 1.0
+  },
+  "validation_metrics": {
+    "mae": 9.43079799953394,
+    "rmse": 13.138301161297935,
+    "r2": 0.5017913245799748,
+    "median_absolute_error": 6.79026510566473,
+    "explained_variance": 0.5019932440667025
+  },
+  "initial_validation_metrics": {
+    "mae": 9.555083945936525,
+    "rmse": 13.27019985709647,
+    "r2": 0.4917378285124109,
+    "median_absolute_error": 6.957342863082886,
+    "explained_variance": 0.4918582437590645
+  },
+  "baseline_validation_metrics": {
+    "mae": 13.543535150480551,
+    "rmse": 18.618903220663597,
+    "r2": -0.0005551906729843736,
+    "median_absolute_error": 9.459082779333851,
+    "explained_variance": 0.0
+  },
+  "unweighted_validation_metrics": null,
+  "test_metrics": {
+    "mae": 10.033694636892417,
+    "rmse": 13.985357124398359,
+    "r2": 0.44263060263630094,
+    "median_absolute_error": 7.034459386020899,
+    "explained_variance": 0.44420834233889805
+  },
+  "initial_test_metrics": {
+    "mae": 10.155776175051916,
+    "rmse": 14.122522467884464,
+    "r2": 0.4316438719718666,
+    "median_absolute_error": 7.197098255157471,
+    "explained_variance": 0.4327584745980626
+  },
+  "baseline_test_metrics": {
+    "mae": 13.544376374381288,
+    "rmse": 18.733243850228003,
+    "r2": -5.05913054034135e-05,
+    "median_absolute_error": 8.540917220666149,
+    "explained_variance": 0.0
+  },
+  "top_features_shap": [
+    {
+      "feature": "current_wind_kt",
+      "mean_abs_shap": 4.8561930656433105
+    },
+    {
+      "feature": "past_delta_wind_6h",
+      "mean_abs_shap": 4.305245876312256
+    },
+    {
+      "feature": "landfall_flag",
+      "mean_abs_shap": 3.1075642108917236
+    },
+    {
+      "feature": "past_delta_pres_6h",
+      "mean_abs_shap": 2.04620361328125
+    },
+    {
+      "feature": "coriolis_param",
+      "mean_abs_shap": 1.9552210569381714
+    }
+  ],
+  "artifact_joblib": "C:\\Users\\thott\\Desktop\\hazardai\\models\\cyclones\\cyclones_intensity_change_24h_xgboost.joblib",
+  "artifact_json": "C:\\Users\\thott\\Desktop\\hazardai\\models\\cyclones\\cyclones_intensity_change_24h_xgboost.json",
+  "eval_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\figures\\cyclones_intensity_change_24h_regression_diagnostic.png",
+  "shap_summary_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\cyclones_intensity_change_24h_shap_summary.png",
+  "shap_bar_plot": "C:\\Users\\thott\\Desktop\\hazardai\\reports\\model_evaluation\\shap\\cyclones_intensity_change_24h_shap_bar.png",
+  "version": "1.0.0",
+  "training_timestamp": "2026-11-17T19:23:17.309346"
+}

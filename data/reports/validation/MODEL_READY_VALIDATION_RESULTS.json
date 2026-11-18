@@ -1,0 +1,123 @@
+[
+  {
+    "hazard": "Floods",
+    "filepath": "data/model_ready/floods/flood_model_ready.csv",
+    "file_size_mb": 0.08,
+    "record_count": 600,
+    "column_count": 22,
+    "checks_passed": true,
+    "issues": [],
+    "null_count": 0,
+    "exact_duplicates": 0,
+    "pk_duplicates": 0,
+    "target_distribution": {
+      "positive_count": 300,
+      "negative_count": 300,
+      "positive_ratio": 0.5
+    },
+    "bounds_violations": {},
+    "split_distribution": {
+      "train": 486,
+      "test": 81,
+      "val": 33
+    },
+    "training_approved": true
+  },
+  {
+    "hazard": "Landslides",
+    "filepath": "data/model_ready/landslides/landslide_model_ready.csv",
+    "file_size_mb": 0.08,
+    "record_count": 600,
+    "column_count": 22,
+    "checks_passed": true,
+    "issues": [],
+    "null_count": 0,
+    "exact_duplicates": 0,
+    "pk_duplicates": 0,
+    "target_distribution": {
+      "positive_count": 300,
+      "negative_count": 300,
+      "positive_ratio": 0.5
+    },
+    "bounds_violations": {},
+    "split_distribution": {
+      "train": 366,
+      "val": 144,
+      "test": 90
+    },
+    "training_approved": true
+  },
+  {
+    "hazard": "Earthquakes",
+    "filepath": "data/model_ready/earthquakes/earthquake_model_ready.csv",
+    "file_size_mb": 1.15,
+    "record_count": 10000,
+    "column_count": 19,
+    "checks_passed": true,
+    "issues": [],
+    "null_count": 0,
+    "exact_duplicates": 0,
+    "pk_duplicates": 0,
+    "target_distribution": {
+      "positive_count": 1979,
+      "negative_count": 8021,
+      "positive_ratio": 0.1979
+    },
+    "bounds_violations": {},
+    "split_distribution": {
+      "train": 7255,
+      "test": 1538,
+      "val": 1207
+    },
+    "training_approved": true
+  },
+  {
+    "hazard": "Cyclones",
+    "filepath": "data/model_ready/cyclones/cyclone_model_ready.csv",
+    "file_size_mb": 29.43,
+    "record_count": 220484,
+    "column_count": 22,
+    "checks_passed": true,
+    "issues": [],
+    "null_count": 0,
+    "exact_duplicates": 0,
+    "unique_storms": 4513,
+    "target_distribution": {
+      "positive_count": 12076,
+      "negative_count": 208408,
+      "positive_ratio": 0.0548
+    },
+    "bounds_violations": {},
+    "split_distribution": {
+      "train": 177798,
+      "test": 21756,
+      "val": 20930
+    },
+    "storm_leakage_count": 0,
+    "training_approved": true
+  },
+  {
+    "hazard": "Wildfires",
+    "filepath": "data/model_ready/wildfires/wildfire_model_ready.csv",
+    "file_size_mb": 0.15,
+    "record_count": 1200,
+    "column_count": 19,
+    "checks_passed": true,
+    "issues": [],
+    "null_count": 0,
+    "exact_duplicates": 0,
+    "pk_duplicates": 0,
+    "target_distribution": {
+      "positive_count": 600,
+      "negative_count": 600,
+      "positive_ratio": 0.5
+    },
+    "bounds_violations": {},
+    "split_distribution": {
+      "train": 930,
+      "val": 174,
+      "test": 96
+    },
+    "training_approved": true
+  }
+]

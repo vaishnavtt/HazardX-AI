@@ -1,0 +1,32 @@
+{
+  "hazard": "Earthquakes",
+  "task": "Regional Seismic Activity & Aftershock Hazard Assessment",
+  "dataset_file": "data/model_ready/earthquakes\\earthquake_model_ready.csv",
+  "record_count": 10000,
+  "feature_count": 11,
+  "input_features": [
+    "mainshock_mag",
+    "focal_depth_km",
+    "dist_to_active_fault_km",
+    "nearest_fault_slip_type",
+    "prior_count_7d_100km",
+    "prior_count_30d_100km",
+    "prior_count_365d_100km",
+    "prior_max_mag_30d",
+    "cumulative_energy_log_joules",
+    "seismic_rate_accel_ratio",
+    "regional_b_value"
+  ],
+  "target_variables": {
+    "elevated_aftershock_hazard": "Binary indicator (1 = >=5 aftershocks or secondary M>=5.0 within 30 days and 100km; 0 = low)",
+    "aftershock_count_30d": "Continuous count of subsequent earthquakes in 30 days",
+    "max_aftershock_mag_30d": "Maximum magnitude of aftershock in subsequent 30 days"
+  },
+  "validation_strategy": "Chronological Walk-Forward Split: train (2000-2018), val (2019-2021), test (2022-2025)",
+  "scientific_limitation": "Explicitly restricts ML task to statistical aftershock rate and regional seismic hazard. Deterministic exact earthquake prediction is physically impossible.",
+  "class_balance": {
+    "elevated_hazard_count": 1979,
+    "quiescent_count": 8021,
+    "positive_ratio": 0.198
+  }
+}

@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use HAZARDX AI in your research or civil protection decision support, please cite it as below."
+title: "HAZARDX AI: Global Multi-Hazard Intelligence, Forecasting, and Early Warning Decision-Support Platform"
+version: 1.0.0
+date-released: 2026-11-19
+url: "https://github.com/vaishnavtt/HazardX-AI"
+authors:
+  - family-names: "Thott"
+    given-names: "Vaishnav"
+    alias: "vaishnavtt"
+keywords:
+  - natural-disasters
+  - early-warning-system
+  - disaster-intelligence
+  - machine-learning
+  - xgboost
+  - treeshap
+  - multi-hazard
+  - floods
+  - landslides
+  - earthquakes
+  - tropical-cyclones
+  - wildfires
+  - fast-api
+  - react

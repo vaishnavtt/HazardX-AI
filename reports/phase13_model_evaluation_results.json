@@ -1,0 +1,543 @@
+{
+  "floods_flood_occurrence": {
+    "hazard": "floods",
+    "task_name": "flood_occurrence",
+    "task_type": "binary_classification",
+    "target_column": "flood_occurred",
+    "test_samples": 81,
+    "model_metrics": {
+      "accuracy": 0.7160493827160493,
+      "precision": 0.7368421052631579,
+      "recall": 0.6829268292682927,
+      "specificity": 0.75,
+      "f1": 0.7088607594936709,
+      "roc_auc": 0.7899390243902439,
+      "pr_auc": 0.8156368211608489,
+      "brier_score": 0.19154241785862908,
+      "confusion_matrix": {
+        "tn": 30,
+        "fp": 10,
+        "fn": 13,
+        "tp": 28
+      }
+    },
+    "naive_baseline_metrics": {
+      "brier_score": 0.25002963640366477,
+      "roc_auc": 0.5,
+      "pr_auc": 0.5061728395061729,
+      "accuracy": 0.49382716049382713,
+      "f1": 0.0
+    },
+    "physical_baseline_metrics": {
+      "rule_description": "3-day cumulative rainfall > 50mm",
+      "accuracy": 0.6419753086419753,
+      "precision": 0.875,
+      "recall": 0.34146341463414637,
+      "f1": 0.49122807017543857,
+      "confusion_matrix": {
+        "tn": 38,
+        "fp": 2,
+        "fn": 27,
+        "tp": 14
+      }
+    },
+    "calibration": {
+      "prob_true": [
+        0.21739130434782608,
+        0.3333333333333333,
+        0.5,
+        0.7272727272727273,
+        0.85
+      ],
+      "prob_pred": [
+        0.11189913328575052,
+        0.30125000774860383,
+        0.5094508851567904,
+        0.7300217530944131,
+        0.8812167465686798
+      ]
+    },
+    "warning_usefulness": {
+      "false_alarm_rate": 0.25,
+      "missed_event_rate": 0.3170731707317073,
+      "threat_score_csi": 0.5490196078431373
+    }
+  },
+  "floods_flood_severity": {
+    "hazard": "floods",
+    "task_name": "flood_severity",
+    "task_type": "multiclass_classification",
+    "target_column": "severity_class",
+    "test_samples": 81,
+    "model_metrics": {
+      "accuracy": 0.7530864197530864,
+      "f1_macro": 0.7527472527472527,
+      "f1_weighted": 0.7526341970786415,
+      "roc_auc": 0.5,
+      "confusion_matrix": [
+        [
+          32,
+          8,
+          0
+        ],
+        [
+          12,
+          29,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "naive_baseline_metrics": {
+      "accuracy": 0.49382716049382713,
+      "f1_macro": 0.3305785123966942,
+      "strategy": "Majority class (0)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {}
+  },
+  "landslides_landslide_occurrence": {
+    "hazard": "landslides",
+    "task_name": "landslide_occurrence",
+    "task_type": "binary_classification",
+    "target_column": "landslide_occurred",
+    "test_samples": 90,
+    "model_metrics": {
+      "accuracy": 0.6888888888888889,
+      "precision": 0.8484848484848485,
+      "recall": 0.5490196078431373,
+      "specificity": 0.8717948717948718,
+      "f1": 0.6666666666666666,
+      "roc_auc": 0.7496229260935142,
+      "pr_auc": 0.8196179448465875,
+      "brier_score": 0.23412336856483312,
+      "confusion_matrix": {
+        "tn": 34,
+        "fp": 5,
+        "fn": 23,
+        "tp": 28
+      }
+    },
+    "naive_baseline_metrics": {
+      "brier_score": 0.251576637104721,
+      "roc_auc": 0.5,
+      "pr_auc": 0.5666666666666667,
+      "accuracy": 0.43333333333333335,
+      "f1": 0.0
+    },
+    "physical_baseline_metrics": {
+      "rule_description": "3-day cumulative rainfall > 50mm",
+      "accuracy": 0.6333333333333333,
+      "precision": 0.95,
+      "recall": 0.37254901960784315,
+      "f1": 0.5352112676056338,
+      "confusion_matrix": {
+        "tn": 38,
+        "fp": 1,
+        "fn": 32,
+        "tp": 19
+      }
+    },
+    "calibration": {
+      "prob_true": [
+        0.3611111111111111,
+        0.45,
+        0.6666666666666666,
+        1.0,
+        0.8620689655172413
+      ],
+      "prob_pred": [
+        0.08163215168234375,
+        0.2967241697013378,
+        0.5221950809160868,
+        0.780298501253128,
+        0.9448319200811715
+      ]
+    },
+    "warning_usefulness": {
+      "false_alarm_rate": 0.1282051282051282,
+      "missed_event_rate": 0.45098039215686275,
+      "threat_score_csi": 0.5
+    }
+  },
+  "landslides_landslide_magnitude": {
+    "hazard": "landslides",
+    "task_name": "landslide_magnitude",
+    "task_type": "multiclass_classification",
+    "target_column": "hazard_magnitude_class",
+    "test_samples": 90,
+    "model_metrics": {
+      "accuracy": 0.6222222222222222,
+      "f1_macro": 0.42209226770630276,
+      "f1_weighted": 0.6013948451375352,
+      "roc_auc": 0.5998172718382574,
+      "confusion_matrix": [
+        [
+          32,
+          7,
+          0
+        ],
+        [
+          23,
+          24,
+          0
+        ],
+        [
+          1,
+          3,
+          0
+        ]
+      ]
+    },
+    "naive_baseline_metrics": {
+      "accuracy": 0.43333333333333335,
+      "f1_macro": 0.20155038759689922,
+      "strategy": "Majority class (0)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {}
+  },
+  "earthquakes_aftershock_hazard": {
+    "hazard": "earthquakes",
+    "task_name": "aftershock_hazard",
+    "task_type": "binary_classification",
+    "target_column": "elevated_aftershock_hazard",
+    "test_samples": 1538,
+    "model_metrics": {
+      "accuracy": 0.5487646293888166,
+      "precision": 0.290929203539823,
+      "recall": 0.8322784810126582,
+      "specificity": 0.47545008183306053,
+      "f1": 0.4311475409836066,
+      "roc_auc": 0.7400311276388573,
+      "pr_auc": 0.4658134291878792,
+      "brier_score": 0.27873443587659785,
+      "confusion_matrix": {
+        "tn": 581,
+        "fp": 641,
+        "fn": 53,
+        "tp": 263
+      }
+    },
+    "naive_baseline_metrics": {
+      "brier_score": 0.16328845337772185,
+      "roc_auc": 0.5,
+      "pr_auc": 0.20546163849154747,
+      "accuracy": 0.7945383615084526,
+      "f1": 0.0
+    },
+    "physical_baseline_metrics": {
+      "rule_description": "Prior 30-day seismic count >= 5 events",
+      "accuracy": 0.8068920676202861,
+      "precision": 0.5979381443298969,
+      "recall": 0.18354430379746836,
+      "f1": 0.28087167070217917,
+      "confusion_matrix": {
+        "tn": 1183,
+        "fp": 39,
+        "fn": 258,
+        "tp": 58
+      }
+    },
+    "calibration": {
+      "prob_true": [
+        0.04929577464788732,
+        0.07180851063829788,
+        0.15352697095435686,
+        0.23387096774193547,
+        0.4558303886925795
+      ],
+      "prob_pred": [
+        0.15174961551814012,
+        0.2870724268178356,
+        0.5018791597166496,
+        0.6992612157858187,
+        0.8888518595442755
+      ]
+    },
+    "warning_usefulness": {
+      "false_alarm_rate": 0.5245499181669394,
+      "missed_event_rate": 0.16772151898734178,
+      "threat_score_csi": 0.27481713688610243
+    }
+  },
+  "earthquakes_aftershock_count": {
+    "hazard": "earthquakes",
+    "task_name": "aftershock_count",
+    "task_type": "regression",
+    "target_column": "aftershock_count_30d",
+    "test_samples": 1538,
+    "model_metrics": {
+      "mae": 1.4851151160000835,
+      "rmse": 2.4599472920268264,
+      "r2": -0.04012816154533527,
+      "median_absolute_error": 0.9167054891586304,
+      "explained_variance": 0.017664971184149336
+    },
+    "naive_baseline_metrics": {
+      "mae": 1.6674483047877837,
+      "rmse": 2.4176254411163782,
+      "r2": -0.0046465237154471595,
+      "strategy": "Predict training mean (1.78)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {},
+    "residual_analysis": {
+      "mean_residual": -0.5798564501396187,
+      "std_residual": 2.3906290337025515,
+      "min_residual": -26.92623519897461,
+      "max_residual": 12.019739270210266
+    }
+  },
+  "earthquakes_max_aftershock_mag": {
+    "hazard": "earthquakes",
+    "task_name": "max_aftershock_mag",
+    "task_type": "regression",
+    "target_column": "max_aftershock_mag_30d",
+    "test_samples": 1538,
+    "model_metrics": {
+      "mae": 1.5612392518137461,
+      "rmse": 1.9448762568505666,
+      "r2": 0.3438756002490938,
+      "median_absolute_error": 1.2829232811927795,
+      "explained_variance": 0.3519338686691672
+    },
+    "naive_baseline_metrics": {
+      "mae": 2.3721345065821606,
+      "rmse": 2.418179339997434,
+      "r2": -0.014329957713714148,
+      "strategy": "Predict training mean (2.41)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {},
+    "residual_analysis": {
+      "mean_residual": -0.2155359633931568,
+      "std_residual": 1.9328962473307394,
+      "min_residual": -5.377989768981934,
+      "max_residual": 4.798380327224732
+    }
+  },
+  "cyclones_rapid_intensification": {
+    "hazard": "cyclones",
+    "task_name": "rapid_intensification",
+    "task_type": "binary_classification",
+    "target_column": "rapid_intensification",
+    "test_samples": 21756,
+    "model_metrics": {
+      "accuracy": 0.8573267144695716,
+      "precision": 0.2709251101321586,
+      "recall": 0.6833333333333333,
+      "specificity": 0.8696593817680646,
+      "f1": 0.38801261829652994,
+      "roc_auc": 0.871007610996259,
+      "pr_auc": 0.3542503177183838,
+      "brier_score": 0.10003474182860844,
+      "confusion_matrix": {
+        "tn": 17668,
+        "fp": 2648,
+        "fn": 456,
+        "tp": 984
+      }
+    },
+    "naive_baseline_metrics": {
+      "brier_score": 0.06198721878937426,
+      "roc_auc": 0.5,
+      "pr_auc": 0.06618863761720904,
+      "accuracy": 0.9338113623827909,
+      "f1": 0.0
+    },
+    "physical_baseline_metrics": {
+      "rule_description": "Past 6h wind increase >= 10kt",
+      "accuracy": 0.8941901084758228,
+      "precision": 0.23493234932349324,
+      "recall": 0.2652777777777778,
+      "f1": 0.2491846053489889,
+      "confusion_matrix": {
+        "tn": 19072,
+        "fp": 1244,
+        "fn": 1058,
+        "tp": 382
+      }
+    },
+    "calibration": {
+      "prob_true": [
+        0.010185185185185186,
+        0.05229428351704691,
+        0.11889035667107001,
+        0.25629791894852133,
+        0.45864661654135336
+      ],
+      "prob_pred": [
+        0.05750474877077236,
+        0.2884960303136062,
+        0.4929197884010145,
+        0.692092926517896,
+        0.863692883859601
+      ]
+    },
+    "warning_usefulness": {
+      "false_alarm_rate": 0.1303406182319354,
+      "missed_event_rate": 0.31666666666666665,
+      "threat_score_csi": 0.24070450097847357
+    }
+  },
+  "cyclones_intensity_change_24h": {
+    "hazard": "cyclones",
+    "task_name": "intensity_change_24h",
+    "task_type": "regression",
+    "target_column": "delta_wind_24h",
+    "test_samples": 21756,
+    "model_metrics": {
+      "mae": 10.033694636892417,
+      "rmse": 13.985357124398359,
+      "r2": 0.44263060263630094,
+      "median_absolute_error": 7.034459386020899,
+      "explained_variance": 0.44420834233889805
+    },
+    "naive_baseline_metrics": {
+      "mae": 13.544376374381288,
+      "rmse": 18.733243850228003,
+      "r2": -5.05913054034135e-05,
+      "strategy": "Predict training mean (1.46)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {},
+    "residual_analysis": {
+      "mean_residual": 0.7440800799866641,
+      "std_residual": 13.965548994992176,
+      "min_residual": -62.57954025268555,
+      "max_residual": 91.30939388275146
+    }
+  },
+  "wildfires_wildfire_occurrence": {
+    "hazard": "wildfires",
+    "task_name": "wildfire_occurrence",
+    "task_type": "binary_classification",
+    "target_column": "wildfire_occurred",
+    "test_samples": 96,
+    "model_metrics": {
+      "accuracy": 0.7395833333333334,
+      "precision": 0.7446808510638298,
+      "recall": 0.7291666666666666,
+      "specificity": 0.75,
+      "f1": 0.7368421052631579,
+      "roc_auc": 0.8246527777777778,
+      "pr_auc": 0.8272004271281286,
+      "brier_score": 0.19726795605186456,
+      "confusion_matrix": {
+        "tn": 36,
+        "fp": 12,
+        "fn": 13,
+        "tp": 35
+      }
+    },
+    "naive_baseline_metrics": {
+      "brier_score": 0.25,
+      "roc_auc": 0.5,
+      "pr_auc": 0.5,
+      "accuracy": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "physical_baseline_metrics": {
+      "rule_description": "Fire Weather Index (FWI) > 20",
+      "accuracy": 0.5520833333333334,
+      "precision": 0.7272727272727273,
+      "recall": 0.16666666666666666,
+      "f1": 0.2711864406779661,
+      "confusion_matrix": {
+        "tn": 45,
+        "fp": 3,
+        "fn": 40,
+        "tp": 8
+      }
+    },
+    "calibration": {
+      "prob_true": [
+        0.2702702702702703,
+        0.18181818181818182,
+        1.0,
+        0.6,
+        0.7837837837837838
+      ],
+      "prob_pred": [
+        0.056958244219925756,
+        0.2879455333406275,
+        0.49031591415405273,
+        0.7044628620147705,
+        0.932686494814383
+      ]
+    },
+    "warning_usefulness": {
+      "false_alarm_rate": 0.25,
+      "missed_event_rate": 0.2708333333333333,
+      "threat_score_csi": 0.5833333333333334
+    }
+  },
+  "wildfires_frp_intensity": {
+    "hazard": "wildfires",
+    "task_name": "frp_intensity",
+    "task_type": "regression",
+    "target_column": "log_total_frp_mw",
+    "test_samples": 96,
+    "model_metrics": {
+      "mae": 1.000792084964909,
+      "rmse": 1.3716502878242869,
+      "r2": 0.21537095870337752,
+      "median_absolute_error": 0.6980475499629974,
+      "explained_variance": 0.21537285471342615
+    },
+    "naive_baseline_metrics": {
+      "mae": 1.5485,
+      "rmse": 1.5527265668937817,
+      "r2": -0.005466367470201572,
+      "strategy": "Predict training mean (1.66)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {},
+    "residual_analysis": {
+      "mean_residual": -0.0021322176158090067,
+      "std_residual": 1.371648630567059,
+      "min_residual": -3.5693576335906982,
+      "max_residual": 2.998919089257717
+    }
+  },
+  "wildfires_fire_duration": {
+    "hazard": "wildfires",
+    "task_name": "fire_duration",
+    "task_type": "regression",
+    "target_column": "fire_duration_days",
+    "test_samples": 96,
+    "model_metrics": {
+      "mae": 4.531752170412801,
+      "rmse": 7.344213857728462,
+      "r2": -214.74990875220314,
+      "median_absolute_error": 2.7004109621047974,
+      "explained_variance": -143.6348576510742
+    },
+    "naive_baseline_metrics": {
+      "mae": 3.2354838709677414,
+      "rmse": 3.273890022479742,
+      "r2": -41.87342351716961,
+      "strategy": "Predict training mean (3.74)"
+    },
+    "physical_baseline_metrics": {},
+    "calibration": {},
+    "warning_usefulness": {},
+    "residual_analysis": {
+      "mean_residual": -4.216487018275075,
+      "std_residual": 6.013211655410822,
+      "min_residual": -44.20701217651367,
+      "max_residual": 3.8098254203796387
+    }
+  }
+}
