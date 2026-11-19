@@ -220,11 +220,10 @@ export const AlertManagementPage: React.FC = () => {
               key={hz}
               type="button"
               onClick={() => { setHazardFilter(hz); setPage(1); }}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize transition-all ${
-                hazardFilter === hz
-                  ? 'bg-sky-100 text-sky-800 border border-sky-300 shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
-              }`}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize transition-all ${hazardFilter === hz
+                ? 'bg-sky-100 text-sky-800 border border-sky-300 shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
+                }`}
             >
               {hz}
             </button>
@@ -238,11 +237,10 @@ export const AlertManagementPage: React.FC = () => {
               key={sev}
               type="button"
               onClick={() => { setSeverityFilter(sev); setPage(1); }}
-              className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
-                severityFilter === sev
-                  ? 'bg-slate-800 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
-              }`}
+              className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${severityFilter === sev
+                ? 'bg-slate-800 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
+                }`}
             >
               {sev}
             </button>
@@ -267,9 +265,8 @@ export const AlertManagementPage: React.FC = () => {
                 <div
                   key={alt.alert_id}
                   onClick={() => handleSelectAlert(alt)}
-                  className={`p-4 rounded-2xl glass-card transition-all cursor-pointer bg-white/85 border ${
-                    isSelected ? 'border-sky-500 bg-sky-50/50 shadow-md ring-2 ring-sky-400/20' : 'border-slate-200/80 hover:bg-slate-50/80 shadow-sm'
-                  }`}
+                  className={`p-4 rounded-2xl glass-card transition-all cursor-pointer bg-white/85 border ${isSelected ? 'border-sky-500 bg-sky-50/50 shadow-md ring-2 ring-sky-400/20' : 'border-slate-200/80 hover:bg-slate-50/80 shadow-sm'
+                    }`}
                   style={{ borderLeft: `4px solid ${hColor}` }}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -283,10 +280,9 @@ export const AlertManagementPage: React.FC = () => {
                         </span>
 
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            alt.severity === 'RED'
-                              ? 'bg-rose-100 text-rose-700'
-                              : alt.severity === 'ORANGE'
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${alt.severity === 'RED'
+                            ? 'bg-rose-100 text-rose-700'
+                            : alt.severity === 'ORANGE'
                               ? 'bg-amber-100 text-amber-700'
                               : 'bg-yellow-100 text-yellow-700'
                             }`}

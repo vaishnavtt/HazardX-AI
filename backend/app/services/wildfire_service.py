@@ -37,10 +37,48 @@ class WildfireService:
         raw_prob = float(prob_matrix[0, 1])
         predicted_occ = bool(raw_prob >= 0.50)
         
-        # 2. Bayesian Prior Calibration
+        # 2. Physical Canadian Forest Fire Weather Index (FWI) & Bayesian Prior Calibration
+        fwi = float(features.fwi_fire_weather_index)
         prior = settings.CLIMATOLOGICAL_PRIORS.get("wildfires", 0.002)
-        calibrated_prob = adjust_case_control_probability(raw_prob, prior)
-        
+        base_calibrated_prob = adjust_case_control_probability(raw_prob, prior)
+
+        # Harmonize risk categorization with international physical FWI danger standards (Van Wagner / EFFIS)
+        # FWI < 5.2: LOW (GREEN)
+        # 5.2 <= FWI < 11.2: MODERATE (YELLOW)
+        # 11.2 <= FWI < 21.3: HIGH (ORANGE)
+        # 21.3 <= FWI < 38.0: VERY HIGH (ORANGE)
+        # FWI >= 38.0: EXTREME (RED)
+        if fwi < 5.2:
+            risk_cat = "LOW"
+            alert_lvl = "GREEN"
+            guidance = f"Low fire weather danger (FWI {fwi:.1f}). Humid or moderate atmospheric conditions inhibit wildfire ignition and spread."
+            calibrated_prob = round(min(0.01, base_calibrated_prob), 6)
+            predicted_occ = False
+        elif fwi < 11.2:
+            risk_cat = "MODERATE"
+            alert_lvl = "YELLOW"
+            guidance = f"Moderate fire weather danger (FWI {fwi:.1f}). Normal open-flame safety precautions advised."
+            calibrated_prob = round(min(0.05, max(0.01, base_calibrated_prob)), 6)
+            predicted_occ = bool(raw_prob >= 0.65)
+        elif fwi < 21.3:
+            risk_cat = "HIGH"
+            alert_lvl = "ORANGE"
+            guidance = f"High fire danger (FWI {fwi:.1f}). Dry fine fuels; open burning should be strictly restricted."
+            calibrated_prob = round(min(0.20, max(0.05, base_calibrated_prob)), 6)
+            predicted_occ = True
+        elif fwi < 38.0:
+            risk_cat = "HIGH"
+            alert_lvl = "ORANGE"
+            guidance = f"Very high fire danger (FWI {fwi:.1f}). Extreme fine fuel dryness and rapid fire spread potential."
+            calibrated_prob = round(min(0.60, max(0.20, base_calibrated_prob)), 6)
+            predicted_occ = True
+        else:
+            risk_cat = "SEVERE_CRITICAL"
+            alert_lvl = "RED"
+            guidance = f"Extreme fire weather danger (FWI {fwi:.1f}). Critical fire spread conditions; emergency suppression readiness required."
+            calibrated_prob = round(max(0.60, base_calibrated_prob), 6)
+            predicted_occ = True
+
         # 3. FRP Intensity Model Inference (EXPERIMENTAL / ADVISORY ONLY)
         frp_pred: Optional[float] = None
         frp_status = registry.get_operational_status(self.hazard, "frp_intensity")
@@ -56,10 +94,7 @@ class WildfireService:
         # Blocked from operational prediction due to R^2 = -214.75
         duration_pred: Optional[float] = None
         
-        # 5. Risk Category & Guidance
-        risk_cat, alert_lvl, guidance = categorize_hazard_risk(self.hazard, raw_prob)
-        
-        # 6. Real-Time TreeSHAP Explanation
+        # 5. Real-Time TreeSHAP Explanation
         attributions = explanation_service.explain_prediction(
             model_key="wildfires_wildfire_occurrence",
             model=occ_model,

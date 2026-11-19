@@ -51,6 +51,10 @@ class HazardAssessmentResult(BaseModel):
     operational_status: str
     secondary_prediction: Optional[Dict[str, Any]] = None
     top_features: List[Dict[str, Any]] = []
+    defined_target: Optional[str] = None
+    confidence_or_uncertainty: Optional[str] = None
+    data_sources: Optional[List[str]] = None
+    data_freshness: Optional[str] = "LIVE"
 
 class GeospatialAssessmentResponse(BaseModel):
     latitude: float

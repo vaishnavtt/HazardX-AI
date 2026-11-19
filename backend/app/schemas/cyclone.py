@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from .common import FeatureAttribution
 
 class CycloneFeatures(BaseModel):
-    current_wind_kt: float = Field(..., ge=10.0, le=220.0, description="Current 1-min / 10-min sustained wind speed (knots)")
+    current_wind_kt: float = Field(..., ge=0.0, le=220.0, description="Current 1-min / 10-min sustained wind speed (knots, 0 if calm)")
     current_pres_hpa: float = Field(..., ge=850.0, le=1030.0, description="Current central minimum sea-level pressure (hPa)")
     dist_to_land_km: float = Field(..., ge=0.0, description="Distance from vortex center to nearest coastline (km)")
     landfall_flag: int = Field(..., ge=0, le=1, description="Binary indicator (1 = storm center is over land, 0 = over ocean)")

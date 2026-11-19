@@ -5,6 +5,7 @@ HAZARDX AI — Earthquake Aftershock Hazard Inference Service
 import numpy as np
 import pandas as pd
 from ..schemas.earthquake import EarthquakeFeatures, EarthquakePredictionResponse
+from ..schemas.common import FeatureAttribution
 from ..services.model_registry import registry
 from ..services.explanation_service import explanation_service
 from ..utils.calibration import categorize_hazard_risk
@@ -46,34 +47,61 @@ class EarthquakeService:
             
         df = df.astype(np.float64)
         
-        # 3. Aftershock Hazard Binary Classification
-        haz_model = registry.get_model(self.hazard, "aftershock_hazard")
-        if haz_model is None:
-            raise RuntimeError("Earthquake aftershock hazard model is not loaded in registry.")
+        # 3. Check Physical Seismic Precondition (Gating for Aftershock Hazard)
+        # In strict adherence to USGS policy, aftershock hazard models only evaluate following a qualifying mainshock.
+        # If no mainshock (M >= 4.0) has occurred within 100km, the region is in a quiescent background state.
+        is_quiescent = bool(features.mainshock_mag < 4.0 or (features.prior_count_30d_100km == 0 and features.mainshock_mag < 4.5))
+
+        if is_quiescent:
+            hazard_prob = 0.0
+            predicted_hazard = False
+            risk_cat = "QUIESCENT"
+            alert_lvl = "GREEN"
+            guidance = "No qualifying seismic mainshock (M >= 4.0) observed within 100 km over past 30 days. Tectonically quiescent background state."
+            est_max_mag = None
+            attributions = [
+                FeatureAttribution(
+                    feature="mainshock_mag",
+                    importance_score=1.0,
+                    direction="RISK_DECREASING",
+                    description="No qualifying mainshock observed (M < 4.0; seismically quiescent)"
+                ),
+                FeatureAttribution(
+                    feature="dist_to_active_fault_km",
+                    importance_score=0.8,
+                    direction="RISK_DECREASING" if features.dist_to_active_fault_km > 100 else "RISK_INCREASING",
+                    description=f"Distance to active GEM fault: {features.dist_to_active_fault_km:.1f} km"
+                )
+            ]
+        else:
+            # 4. Aftershock Hazard Binary Classification
+            haz_model = registry.get_model(self.hazard, "aftershock_hazard")
+            if haz_model is None:
+                raise RuntimeError("Earthquake aftershock hazard model is not loaded in registry.")
+                
+            prob_matrix = haz_model.predict_proba(df)
+            hazard_prob = float(prob_matrix[0, 1])
+            predicted_hazard = bool(hazard_prob >= 0.50)
             
-        prob_matrix = haz_model.predict_proba(df)
-        hazard_prob = float(prob_matrix[0, 1])
-        predicted_hazard = bool(hazard_prob >= 0.50)
-        
-        # 4. Risk Category & Guidance
-        risk_cat, alert_lvl, guidance = categorize_hazard_risk(self.hazard, hazard_prob)
-        
-        # 5. Secondary Regression Models (Governed by Operational Status)
-        est_max_mag = None
-        max_mag_model = registry.get_model(self.hazard, "max_aftershock_mag")
-        if max_mag_model is not None and predicted_hazard:
-            # Marked EXPERIMENTAL in registry
-            raw_mag = float(max_mag_model.predict(df)[0])
-            est_max_mag = round(max(3.0, min(9.5, raw_mag)), 2)
+            # Risk Category & Guidance
+            risk_cat, alert_lvl, guidance = categorize_hazard_risk(self.hazard, hazard_prob)
             
-        # 6. Real-Time TreeSHAP Explanation
-        attributions = explanation_service.explain_prediction(
-            model_key="earthquakes_aftershock_hazard",
-            model=haz_model,
-            features_df=df,
-            is_binary=True,
-            top_k=5
-        )
+            # Secondary Regression Models (Governed by Operational Status)
+            est_max_mag = None
+            max_mag_model = registry.get_model(self.hazard, "max_aftershock_mag")
+            if max_mag_model is not None and predicted_hazard:
+                raw_mag = float(max_mag_model.predict(df)[0])
+                est_max_mag = round(max(3.0, min(9.5, raw_mag)), 2)
+                
+            # Real-Time TreeSHAP Explanation
+            attributions = explanation_service.explain_prediction(
+                model_key="earthquakes_aftershock_hazard",
+                model=haz_model,
+                features_df=df,
+                is_binary=True,
+                top_k=5
+            )
+
         
         warnings = [
             "This model provides statistical aftershock hazard assessment following a shallow M>=5.0 mainshock within 100km and 30 days.",

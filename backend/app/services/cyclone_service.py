@@ -26,46 +26,58 @@ class CycloneService:
         feat_dict = features.model_dump()
         df = pd.DataFrame([[feat_dict[f] for f in self.feature_order]], columns=self.feature_order)
         
-        # 1. Rapid Intensification (RI) Model Inference (Operational)
-        ri_model = registry.get_model(self.hazard, "rapid_intensification")
-        if ri_model is None:
-            raise RuntimeError("Cyclone rapid intensification model is not loaded in registry.")
-            
-        prob_matrix = ri_model.predict_proba(df)
-        ri_prob = float(prob_matrix[0, 1])
-        predicted_ri = bool(ri_prob >= 0.50)
-        
-        # 2. Continuous 24h Intensity Change Model Inference (Operational)
-        int_model = registry.get_model(self.hazard, "intensity_change_24h")
-        if int_model is None:
-            raise RuntimeError("Cyclone 24h intensity change model is not loaded in registry.")
-            
-        pred_delta_wind = float(int_model.predict(df)[0])
-        projected_wind = max(10.0, float(features.current_wind_kt + pred_delta_wind))
-        
-        # 3. Risk Category & Guidance (Dual-Trigger: Combines Saffir-Simpson Wind Intensity with Rapid Intensification Potential)
-        wind_max = max(features.current_wind_kt, projected_wind)
-        if wind_max >= 96.0 or ri_prob >= 0.45:
-            risk_cat = "RAPID_INTENSIFICATION_ALERT"
-            alert_lvl = "RED"
-            guidance = f"Major cyclonic storm threat ({wind_max:.0f} kt projected winds or high RI potential). Initiate immediate coastal evacuation and emergency protocols."
-        elif wind_max >= 64.0 or ri_prob >= 0.25:
-            risk_cat = "MODERATE_RI_POTENTIAL"
-            alert_lvl = "YELLOW"
-            guidance = f"Cyclone-force winds ({wind_max:.0f} kt) or elevated RI potential. Secure coastal infrastructure, moor vessels, and heed civil defense orders."
-        else:
-            risk_cat = "LOW_RI_RISK"
+        # 1. Physical Gating: Check whether an active tropical storm or depression is physically present
+        if features.current_wind_kt < 25.0:
+            ri_prob = 0.0
+            predicted_ri = False
+            pred_delta_wind = 0.0
+            projected_wind = 0.0
+            risk_cat = "NO_CYCLONIC_THREAT"
             alert_lvl = "GREEN"
-            guidance = "Routine background tropical conditions; no active destructive storm threat."
-        
-        # 4. Real-Time TreeSHAP Explanation for RI
-        attributions = explanation_service.explain_prediction(
-            model_key="cyclones_rapid_intensification",
-            model=ri_model,
-            features_df=df,
-            is_binary=True,
-            top_k=5
-        )
+            guidance = "No active tropical cyclone or depression tracked within regional maritime basin. Normal conditions."
+            attributions = []
+        else:
+            # 2. Rapid Intensification (RI) Model Inference (Operational)
+            ri_model = registry.get_model(self.hazard, "rapid_intensification")
+            if ri_model is None:
+                raise RuntimeError("Cyclone rapid intensification model is not loaded in registry.")
+                
+            prob_matrix = ri_model.predict_proba(df)
+            ri_prob = float(prob_matrix[0, 1])
+            predicted_ri = bool(ri_prob >= 0.50)
+            
+            # 3. Continuous 24h Intensity Change Model Inference (Operational)
+            int_model = registry.get_model(self.hazard, "intensity_change_24h")
+            if int_model is None:
+                raise RuntimeError("Cyclone 24h intensity change model is not loaded in registry.")
+                
+            pred_delta_wind = float(int_model.predict(df)[0])
+            projected_wind = max(10.0, float(features.current_wind_kt + pred_delta_wind))
+            
+            # 4. Risk Category & Guidance (Dual-Trigger: Combines Saffir-Simpson Wind Intensity with Rapid Intensification Potential)
+            wind_max = max(features.current_wind_kt, projected_wind)
+            if wind_max >= 96.0 or ri_prob >= 0.45:
+                risk_cat = "RAPID_INTENSIFICATION_ALERT"
+                alert_lvl = "RED"
+                guidance = f"Major cyclonic storm threat ({wind_max:.0f} kt projected winds or high RI potential). Initiate immediate coastal evacuation and emergency protocols."
+            elif wind_max >= 64.0 or ri_prob >= 0.25:
+                risk_cat = "MODERATE_RI_POTENTIAL"
+                alert_lvl = "YELLOW"
+                guidance = f"Cyclone-force winds ({wind_max:.0f} kt) or elevated RI potential. Secure coastal infrastructure, moor vessels, and heed civil defense orders."
+            else:
+                risk_cat = "LOW_RI_RISK"
+                alert_lvl = "GREEN"
+                guidance = "Routine background tropical conditions; no active destructive storm threat."
+            
+            # 5. Real-Time TreeSHAP Explanation for RI
+            attributions = explanation_service.explain_prediction(
+                model_key="cyclones_rapid_intensification",
+                model=ri_model,
+                features_df=df,
+                is_binary=True,
+                top_k=5
+            )
+
         
         warnings = [
             "Rapid Intensification (RI) is defined meteorologically as an intensity increase of >= 30 knots (15.4 m/s) over a 24-hour window.",

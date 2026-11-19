@@ -324,11 +324,10 @@ export const ForecastPage: React.FC = () => {
                 key={hz}
                 type="button"
                 onClick={() => setSelectedHazard(hz)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize transition-all ${
-                  selectedHazard === hz
-                    ? 'bg-sky-100 text-sky-800 border border-sky-300 shadow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
-                }`}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold capitalize transition-all ${selectedHazard === hz
+                  ? 'bg-sky-100 text-sky-800 border border-sky-300 shadow-sm'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/50'
+                  }`}
               >
                 {hz}
               </button>

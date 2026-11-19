@@ -16,7 +16,7 @@ VALID_SLIP_TYPES = [
 ]
 
 class EarthquakeFeatures(BaseModel):
-    mainshock_mag: float = Field(..., ge=4.5, le=10.0, description="Triggering earthquake magnitude (Mw)")
+    mainshock_mag: float = Field(..., ge=0.0, le=10.0, description="Triggering earthquake magnitude (Mw, 0.0 if quiescent)")
     focal_depth_km: float = Field(..., ge=0.0, le=700.0, description="Hypocentral depth (km)")
     dist_to_active_fault_km: float = Field(..., ge=0.0, description="3D distance to nearest GEM active fault vertex (km)")
     nearest_fault_slip_type: str = Field(default="Subduction_Thrust", description="Tectonic slip regime")

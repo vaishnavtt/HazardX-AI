@@ -258,15 +258,14 @@ export const LocationAssessmentPage: React.FC = () => {
                     Overall Risk for This Location
                   </span>
                   <span
-                    className={`text-sm font-bold px-3 py-1 rounded-full inline-block mt-0.5 ${
-                      assessment.overall_composite_risk === 'RED'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                        : assessment.overall_composite_risk === 'ORANGE'
+                    className={`text-sm font-bold px-3 py-1 rounded-full inline-block mt-0.5 ${assessment.overall_composite_risk === 'RED'
+                      ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                      : assessment.overall_composite_risk === 'ORANGE'
                         ? 'bg-amber-100 text-amber-800 border border-amber-300'
                         : assessment.overall_composite_risk === 'YELLOW'
-                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                    }`}
+                          ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                      }`}
                   >
                     {assessment.overall_composite_risk} ADVISORY
                   </span>
@@ -297,6 +296,13 @@ export const LocationAssessmentPage: React.FC = () => {
               };
               const Icon = meta.icon;
 
+              const pVal = typeof hData.calibrated_probability === 'number'
+                ? hData.calibrated_probability
+                : (typeof hData.probability === 'number' ? hData.probability : 0.0);
+              const formattedProb = pVal === 0.0
+                ? '0.0%'
+                : (pVal < 0.001 ? '< 0.1%' : (pVal < 0.01 ? `${(pVal * 100).toFixed(1)}%` : `${(pVal * 100).toFixed(0)}%`));
+
               return (
                 <GlassCard
                   key={hazardKey}
@@ -313,7 +319,14 @@ export const LocationAssessmentPage: React.FC = () => {
                         >
                           <Icon className="w-5 h-5" />
                         </div>
-                        <h3 className="font-bold text-slate-900 text-base">{meta.label}</h3>
+                        <div>
+                          <h3 className="font-bold text-slate-900 text-base">{meta.label}</h3>
+                          {hData.defined_target && (
+                            <span className="text-[10px] text-slate-500 font-medium block">
+                              {hData.defined_target}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <span
@@ -328,9 +341,15 @@ export const LocationAssessmentPage: React.FC = () => {
                       </span>
                     </div>
 
+                    {hData.guidance && (
+                      <div className="p-3 rounded-xl bg-slate-100/70 border border-slate-200/60 text-xs text-slate-700 leading-snug">
+                        {hData.guidance}
+                      </div>
+                    )}
+
                     <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
                       <span className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
-                        What is increasing the risk?
+                        Contributing Environmental Factors
                       </span>
                       <p className="text-xs text-slate-700 leading-relaxed">
                         {hData.top_features && hData.top_features.length > 0
@@ -340,14 +359,17 @@ export const LocationAssessmentPage: React.FC = () => {
                     </div>
 
                     <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1">
-                      <span>Source: {meta.dataSrc.split('&')[0]}</span>
-                      <span className="font-mono text-slate-600 font-medium">Horizon: 24h</span>
+                      <span>Source: {(hData.data_sources && hData.data_sources.length > 0) ? hData.data_sources.slice(0, 2).join(', ') : meta.dataSrc.split('&')[0]}</span>
+                      <span className="font-mono text-slate-600 font-medium flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                        {hData.data_freshness || 'LIVE'}
+                      </span>
                     </div>
                   </div>
 
                   <div className="pt-3 border-t border-slate-100 mt-3 flex items-center justify-between text-xs">
                     <span className="text-slate-600">
-                      Estimated Threat Score: <strong className="text-slate-900 font-mono">{((hData.probability || 0.1) * 100).toFixed(0)}%</strong>
+                      Calibrated Event Probability: <strong className="text-slate-900 font-mono">{formattedProb}</strong>
                     </span>
                     <Link to={`/map?hazard=${hazardKey}&lat=${assessment.latitude}&lon=${assessment.longitude}`}>
                       <span className="text-cyan-700 font-semibold hover:underline">View on Map &rarr;</span>

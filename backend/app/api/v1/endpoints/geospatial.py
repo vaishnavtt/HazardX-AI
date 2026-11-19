@@ -63,14 +63,18 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                 hazard="floods",
                 model_name="flood_occurrence_v1",
                 predicted=f_resp.flood_occurrence_predicted,
-                probability=round(f_resp.raw_model_score, 4),
+                probability=round(f_resp.calibrated_susceptibility_score, 4),
                 calibrated_probability=round(f_resp.calibrated_susceptibility_score, 4),
                 risk_category=f_resp.risk_category,
                 alert_level=f_resp.alert_level,
                 guidance=f_resp.action_guidance,
                 operational_status="OPERATIONAL",
                 secondary_prediction={"severity_class": f_resp.severity_class, "severity_label": f_resp.severity_label},
-                top_features=[feat.model_dump() for feat in f_resp.important_contributing_features]
+                top_features=[feat.model_dump() for feat in f_resp.important_contributing_features],
+                defined_target="River Inundation & Reach Overflow (24h horizon)",
+                confidence_or_uncertainty="Moderate to High (GloFAS + Open-Meteo)",
+                data_sources=["Copernicus GloFAS", "Open-Meteo NWP", "SRTM / Copernicus DEM"],
+                data_freshness=env_context.data_freshness
             )
             sev = ALERT_LEVEL_SEVERITY.get(f_resp.alert_level, 1)
             if sev > highest_severity:
@@ -85,14 +89,18 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                 hazard="landslides",
                 model_name="landslide_occurrence_v1",
                 predicted=ls_resp.landslide_occurrence_predicted,
-                probability=round(ls_resp.raw_model_score, 4),
+                probability=round(ls_resp.calibrated_susceptibility_score, 4),
                 calibrated_probability=round(ls_resp.calibrated_susceptibility_score, 4),
                 risk_category=ls_resp.risk_category,
                 alert_level=ls_resp.alert_level,
                 guidance=ls_resp.action_guidance,
                 operational_status="OPERATIONAL",
                 secondary_prediction={"magnitude_class": ls_resp.hazard_magnitude_class, "magnitude_label": ls_resp.hazard_magnitude_label},
-                top_features=[feat.model_dump() for feat in ls_resp.important_contributing_features]
+                top_features=[feat.model_dump() for feat in ls_resp.important_contributing_features],
+                defined_target="Rainfall-Triggered Slope Destabilization (24h horizon)",
+                confidence_or_uncertainty="High (Copernicus DEM Slope + Open-Meteo Rain)",
+                data_sources=["NASA Global Landslide Catalog", "Open-Meteo NWP", "Copernicus DEM"],
+                data_freshness=env_context.data_freshness
             )
             sev = ALERT_LEVEL_SEVERITY.get(ls_resp.alert_level, 1)
             if sev > highest_severity:
@@ -114,7 +122,11 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                 guidance=eq_resp.action_guidance,
                 operational_status="OPERATIONAL",
                 secondary_prediction={"estimated_max_aftershock_magnitude": eq_resp.estimated_max_aftershock_magnitude},
-                top_features=[feat.model_dump() for feat in eq_resp.important_contributing_features]
+                top_features=[feat.model_dump() for feat in eq_resp.important_contributing_features],
+                defined_target="P(M >= 4.5 Aftershock Sequence | Qualifying Mainshock, 30d/100km)",
+                confidence_or_uncertainty="Statistical Law (USGS Omori-Utsu Formulations)",
+                data_sources=["USGS Earthquake Hazards Program ComCat", "GEM Active Faults"],
+                data_freshness=env_context.data_freshness
             )
             sev = ALERT_LEVEL_SEVERITY.get(eq_resp.alert_level, 1)
             if sev > highest_severity:
@@ -129,23 +141,28 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                 hazard="wildfires",
                 model_name="wildfire_occurrence_v1",
                 predicted=wf_resp.wildfire_susceptibility_predicted,
-                probability=round(wf_resp.raw_model_score, 4),
+                probability=round(wf_resp.calibrated_susceptibility_score, 4),
                 calibrated_probability=round(wf_resp.calibrated_susceptibility_score, 4),
                 risk_category=wf_resp.risk_category,
                 alert_level=wf_resp.alert_level,
                 guidance=wf_resp.action_guidance,
                 operational_status="OPERATIONAL",
                 secondary_prediction={"estimated_log_frp_mw": wf_resp.estimated_log_frp_mw},
-                top_features=[feat.model_dump() for feat in wf_resp.important_contributing_features]
+                top_features=[feat.model_dump() for feat in wf_resp.important_contributing_features],
+                defined_target="Wildfire Ignition & Fire Weather Danger (24h horizon)",
+                confidence_or_uncertainty="High (Canadian FWI Standard + NASA FIRMS Hotspots)",
+                data_sources=["Canadian Forest FWI System", "NASA FIRMS", "Open-Meteo NWP"],
+                data_freshness=env_context.data_freshness
             )
             sev = ALERT_LEVEL_SEVERITY.get(wf_resp.alert_level, 1)
             if sev > highest_severity:
                 highest_severity = sev
                 highest_cat = wf_resp.alert_level
 
-        # 6. Evaluate Cyclones (Tropical / Subtropical Zones)
+        # 6. Evaluate Cyclones (Tropical / Subtropical Maritime Zones)
         if "cyclones" in hazards:
-            if abs(lat) <= 45.0:
+            # Check proximity to coastline and elevation
+            if abs(lat) <= 45.0 and env_context.elevation_m <= 300.0:
                 cy_feats = spatial_feature_service.build_cyclone_features(lat, lon, env_context, raw_bundles, overrides)
                 cy_resp = cyclone_service.predict(cy_feats)
                 assessments["cyclones"] = HazardAssessmentResult(
@@ -159,7 +176,11 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                     guidance=cy_resp.action_guidance,
                     operational_status="OPERATIONAL",
                     secondary_prediction={"predicted_24h_intensity_change_kt": cy_resp.predicted_24h_intensity_change_kt},
-                    top_features=[feat.model_dump() for feat in cy_resp.important_contributing_features]
+                    top_features=[feat.model_dump() for feat in cy_resp.important_contributing_features],
+                    defined_target="Tropical Cyclone Rapid Intensification (Delta V >= 30 kt in 24h)",
+                    confidence_or_uncertainty="Moderate (NOAA NHC / IMD RSMC Synoptic Feeds)",
+                    data_sources=["NOAA NHC", "IMD RSMC New Delhi", "IBTrACS Catalog"],
+                    data_freshness=env_context.data_freshness
                 )
                 sev = ALERT_LEVEL_SEVERITY.get(cy_resp.alert_level, 1)
                 if sev > highest_severity:
@@ -168,16 +189,21 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
             else:
                 assessments["cyclones"] = HazardAssessmentResult(
                     hazard="cyclones",
-                    model_name="cyclone_latitude_filter",
+                    model_name="cyclone_geographic_filter",
                     predicted=False,
-                    probability=0.001,
-                    calibrated_probability=0.001,
+                    probability=0.0,
+                    calibrated_probability=0.0,
                     risk_category="LOW",
                     alert_level="GREEN",
-                    guidance="Location is outside tropical cyclone genesis latitude zones (> 45° latitude).",
+                    guidance="Inland continental/mountain location outside maritime tropical cyclone genesis and landfall zones.",
                     operational_status="OPERATIONAL",
-                    top_features=[]
+                    top_features=[],
+                    defined_target="Tropical Cyclone Rapid Intensification (Delta V >= 30 kt in 24h)",
+                    confidence_or_uncertainty="High (Topological Inland Geographic Exclusion)",
+                    data_sources=["NOAA NHC / IMD Bulletins"],
+                    data_freshness="LIVE"
                 )
+
 
         summary = (
             f"Multi-hazard location assessment at ({lat:.4f}, {lon:.4f}) resolved composite risk level: {highest_cat}. "

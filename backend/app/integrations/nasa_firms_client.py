@@ -154,6 +154,25 @@ class NASAFIRMSClient:
             ))
         return fallback_events
 
+    async def get_active_fires_near(
+        self, lat: float, lon: float, radius_km: float = 50.0
+    ) -> List[LiveWildfireEvent]:
+        """
+        Retrieves authentic satellite active fire detections within a radial distance (km)
+        of a target geographic coordinate.
+        """
+        import math
+        all_fires = await self.get_active_fires(limit=500)
+        nearby: List[LiveWildfireEvent] = []
+        cos_lat = math.cos(math.radians(lat))
+        for f in all_fires:
+            d_lat = (f.latitude - lat) * 111.0
+            d_lon = (f.longitude - lon) * 111.0 * cos_lat
+            dist = math.sqrt(d_lat * d_lat + d_lon * d_lon)
+            if dist <= radius_km:
+                nearby.append(f)
+        return nearby
+
     get_recent_fires = get_active_fires
 
 nasa_firms_client = NASAFIRMSClient()

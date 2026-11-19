@@ -127,34 +127,40 @@ class SpatialFeatureService:
     ) -> EarthquakeFeatures:
         ov = overrides or {}
         
-        # Real-time radial background seismicity from USGS
+        # Real-time radial background seismicity from USGS (past 30 days within 100km)
         radial_events = await usgs_client.query_radial_earthquakes(lat, lon, radius_km=100.0, days_back=30, min_magnitude=2.0)
         
         count_30d = len(radial_events)
-        # Filter for 7 days
-        now_ms = raw.get("timestamp_ms") or (1000 * (1700000000))
-        # Past 7 days (7 * 86400 * 1000 ms)
+        now_ms = raw.get("timestamp_ms") or (1000 * 1700000000)
         past_7d_ms = 7 * 86400 * 1000
         count_7d = sum(1 for e in radial_events if e.get("time_ms", 0) >= (now_ms - past_7d_ms)) if radial_events else 0
         count_365d = count_30d * 12  # Annualized Poisson rate estimate
 
         mags = [e["mag"] for e in radial_events if e.get("mag")]
-        prior_max_m = max(mags) if mags else 3.2
+        prior_max_m = max(mags) if mags else 0.0
 
         # Cumulative seismic energy log10(Joules): log10(E) = 4.8 + 1.5 * M
         if mags:
             tot_energy = sum(10.0 ** (4.8 + 1.5 * m) for m in mags)
             cum_energy = math.log10(max(1.0, tot_energy))
         else:
-            cum_energy = 9.5
+            cum_energy = 0.0
 
-        # Rate acceleration ratio: (7d_rate / 30d_rate)
         rate_7d = count_7d / 7.0
-        rate_30d = max(0.01, count_30d / 30.0)
-        accel_ratio = rate_7d / rate_30d
+        rate_30d = max(0.01, count_30d / 30.0) if count_30d > 0 else 0.0
+        accel_ratio = (rate_7d / rate_30d) if rate_30d > 0 else 1.0
 
-        main_m = float(ov.get("mainshock_mag", 6.0))
-        depth = float(ov.get("focal_depth_km", 10.0))
+        # Strict physical gating: Only evaluate mainshock if explicitly passed in scenario overrides
+        # or if an actual qualifying M >= 4.0 mainshock occurred in radial USGS monitoring
+        if "mainshock_mag" in ov:
+            main_m = float(ov["mainshock_mag"])
+            depth = float(ov.get("focal_depth_km", 10.0))
+        elif mags and max(mags) >= 4.0:
+            main_m = float(max(mags))
+            depth = float(radial_events[0].get("depth_km", 10.0))
+        else:
+            main_m = 0.0
+            depth = 0.0
 
         return EarthquakeFeatures(
             mainshock_mag=main_m,
@@ -178,7 +184,7 @@ class SpatialFeatureService:
             temp_2m_celsius=env.temp_2m_celsius,
             relative_humidity_pct=env.relative_humidity_pct,
             wind_speed_10m_ms=env.wind_speed_10m_ms,
-            precip_7d_sum_mm=float(w.get("precip_7d_sum_mm", 10.0)),
+            precip_7d_sum_mm=float(w.get("precip_7d_sum_mm", 0.0)),
             precip_30d_sum_mm=env.precip_30d_sum_mm,
             soil_temp_celsius=float(w.get("soil_temp_celsius", env.temp_2m_celsius - 2.0)),
             fwi_fire_weather_index=env.fwi_fire_weather_index,
@@ -193,25 +199,42 @@ class SpatialFeatureService:
         omega = 7.2921159e-5
         f_coriolis = 2.0 * omega * math.sin(math.radians(lat))
 
-        # Default scenario params if no storm directly overhead
-        wind = float(ov.get("current_wind_kt", 45.0))
-        pres = float(ov.get("current_pres_hpa", 996.0))
-        dist_land = float(ov.get("dist_to_land_km", 85.0))
-        speed = float(ov.get("translational_speed_kt", 11.5))
-        head = float(ov.get("heading_degrees", 315.0))
+        # Check whether location is inland mountain (> 300m elevation) or inland continent
+        is_inland_highland = env.elevation_m > 300.0
+
+        if "current_wind_kt" in ov:
+            wind = float(ov["current_wind_kt"])
+            pres = float(ov.get("current_pres_hpa", 996.0))
+            dist_land = float(ov.get("dist_to_land_km", 85.0))
+            speed = float(ov.get("translational_speed_kt", 11.5))
+            head = float(ov.get("heading_degrees", 315.0))
+        elif is_inland_highland:
+            # Inland mountain regions (e.g. Wayanad, Himalayas) have zero maritime cyclone genesis / track danger
+            wind = 0.0
+            pres = 1013.25
+            dist_land = 500.0
+            speed = 0.0
+            head = 0.0
+        else:
+            # Coastal / oceanic default
+            wind = 0.0
+            pres = 1013.25
+            dist_land = 200.0
+            speed = 0.0
+            head = 0.0
 
         return CycloneFeatures(
             current_wind_kt=wind,
             current_pres_hpa=pres,
             dist_to_land_km=dist_land,
             landfall_flag=int(dist_land <= 10.0),
-            past_delta_wind_6h=float(ov.get("past_delta_wind_6h", 5.0)),
-            past_delta_wind_12h=float(ov.get("past_delta_wind_12h", 10.0)),
-            past_delta_pres_6h=float(ov.get("past_delta_pres_6h", -3.5)),
+            past_delta_wind_6h=float(ov.get("past_delta_wind_6h", 0.0)),
+            past_delta_wind_12h=float(ov.get("past_delta_wind_12h", 0.0)),
+            past_delta_pres_6h=float(ov.get("past_delta_pres_6h", 0.0)),
             translational_speed_kt=speed,
             heading_degrees=head,
             coriolis_param=round(f_coriolis, 7),
-            pot_intensity_headroom=float(ov.get("pot_intensity_headroom", 40.0))
+            pot_intensity_headroom=float(ov.get("pot_intensity_headroom", 0.0))
         )
 
 spatial_feature_service = SpatialFeatureService()
