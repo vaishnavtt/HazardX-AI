@@ -1,0 +1,232 @@
+[
+  {
+    "name": "Wayanad, India",
+    "coordinates": [
+      11.6854,
+      76.132
+    ],
+    "archetype": "Tropical Mountain Western Ghats",
+    "latency_ms": 21155.5,
+    "composite_risk": "GREEN",
+    "environmental": {
+      "elevation_m": 765.0,
+      "slope_deg": 5.9,
+      "fwi": 0.67,
+      "fault_dist_km": 1410.11
+    },
+    "hazard_categories": {
+      "floods": "LOW",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Kochi, India",
+    "coordinates": [
+      9.9312,
+      76.2673
+    ],
+    "archetype": "Arabian Sea Coastal Lowland",
+    "latency_ms": 20028.6,
+    "composite_risk": "ORANGE",
+    "environmental": {
+      "elevation_m": 6.0,
+      "slope_deg": 0.37,
+      "fwi": 0.54,
+      "fault_dist_km": 1350.08
+    },
+    "hazard_categories": {
+      "floods": "HIGH",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Munnar, India",
+    "coordinates": [
+      10.0889,
+      77.0595
+    ],
+    "archetype": "High-Altitude Tea Highlands",
+    "latency_ms": 21037.0,
+    "composite_risk": "RED",
+    "environmental": {
+      "elevation_m": 1461.0,
+      "slope_deg": 7.69,
+      "fwi": 0.51,
+      "fault_dist_km": 1430.88
+    },
+    "hazard_categories": {
+      "floods": "SEVERE_CRITICAL",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Idukki, India",
+    "coordinates": [
+      9.8493,
+      76.971
+    ],
+    "archetype": "High-Relief Dam Catchment",
+    "latency_ms": 21886.9,
+    "composite_risk": "GREEN",
+    "environmental": {
+      "elevation_m": 677.0,
+      "slope_deg": 27.92,
+      "fwi": 0.67,
+      "fault_dist_km": 1408.2
+    },
+    "hazard_categories": {
+      "floods": "LOW",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Palakkad, India",
+    "coordinates": [
+      10.7867,
+      76.6548
+    ],
+    "archetype": "Inland Gap River Floodplain",
+    "latency_ms": 20307.1,
+    "composite_risk": "ORANGE",
+    "environmental": {
+      "elevation_m": 77.0,
+      "slope_deg": 0.82,
+      "fwi": 0.91,
+      "fault_dist_km": 1440.22
+    },
+    "hazard_categories": {
+      "floods": "HIGH",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Ridgecrest, USA",
+    "coordinates": [
+      35.6225,
+      -117.6709
+    ],
+    "archetype": "Mojave Desert Strike-Slip Fault",
+    "latency_ms": 9134.2,
+    "composite_risk": "ORANGE",
+    "environmental": {
+      "elevation_m": 701.0,
+      "slope_deg": 0.32,
+      "fwi": 10.56,
+      "fault_dist_km": 2.86
+    },
+    "hazard_categories": {
+      "floods": "HIGH",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "MODERATE",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Tokyo, Japan",
+    "coordinates": [
+      35.6762,
+      139.6503
+    ],
+    "archetype": "Subduction Megacity Coast",
+    "latency_ms": 10726.2,
+    "composite_risk": "RED",
+    "environmental": {
+      "elevation_m": 37.0,
+      "slope_deg": 0.68,
+      "fwi": 1.57,
+      "fault_dist_km": 17.61
+    },
+    "hazard_categories": {
+      "floods": "LOW",
+      "landslides": "LOW",
+      "earthquakes": "HIGH_AFTERSHOCK_WARNING",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Zhengzhou, China",
+    "coordinates": [
+      34.7466,
+      113.6253
+    ],
+    "archetype": "Yellow River Basin Floodplain",
+    "latency_ms": 19726.4,
+    "composite_risk": "ORANGE",
+    "environmental": {
+      "elevation_m": 109.0,
+      "slope_deg": 0.31,
+      "fwi": 2.85,
+      "fault_dist_km": 217.67
+    },
+    "hazard_categories": {
+      "floods": "HIGH",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Tacloban, Philippines",
+    "coordinates": [
+      11.2444,
+      125.0039
+    ],
+    "archetype": "Typhoon Storm Surge Corridor",
+    "latency_ms": 22347.4,
+    "composite_risk": "RED",
+    "environmental": {
+      "elevation_m": 8.0,
+      "slope_deg": 1.08,
+      "fwi": 0.5,
+      "fault_dist_km": 38.45
+    },
+    "hazard_categories": {
+      "floods": "MODERATE",
+      "landslides": "LOW",
+      "earthquakes": "HIGH_AFTERSHOCK_WARNING",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  },
+  {
+    "name": "Paradise, California, USA",
+    "coordinates": [
+      39.7596,
+      -121.6219
+    ],
+    "archetype": "Chaparral Wildland-Urban Interface",
+    "latency_ms": 20050.0,
+    "composite_risk": "GREEN",
+    "environmental": {
+      "elevation_m": 537.0,
+      "slope_deg": 3.99,
+      "fwi": 0.5,
+      "fault_dist_km": 28.75
+    },
+    "hazard_categories": {
+      "floods": "LOW",
+      "landslides": "LOW",
+      "earthquakes": "QUIESCENT",
+      "wildfires": "LOW",
+      "cyclones": "LOW"
+    }
+  }
+]
