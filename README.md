@@ -369,6 +369,32 @@ hazardai/
 
 ---
 
+## 21.1 Technical Demonstration Guide (10 Benchmark Workflows)
+
+HAZARDX AI is designed for interactive evaluation and technical demonstration. All outputs are dynamically calculated from live physical feeds or verified regional baselines:
+
+1. **Global Hazard Mission Control (`/`):** Displays global active events, system health, and composite alert tallies across all five natural hazard domains.
+2. **Interactive Multi-Hazard Vector Map (`/map`):** Displays WGS84 GeoJSON risk corridors and live sensor detections with standardized hazard colors:
+   - **Floods:** Blue (`#2196F3`)
+   - **Landslides:** Orange (`#FF9800`)
+   - **Earthquakes:** Purple (`#9C27B0`)
+   - **Cyclones:** Cyan (`#00BCD4`)
+   - **Wildfires:** Red (`#F44336`)
+3. **Wayanad Assessment (11.6854°N, 76.1320°E):** Demonstrates how authentic Van Wagner FWI ($5.94$) and distant fault proximity ($>1400\text{ km}$) resolve earlier false alarms organically without hardcoded coordinate exceptions.
+4. **Kochi Coastal Assessment (9.9312°N, 76.2673°E):** Demonstrates coastal lowland river reach monitoring and live GloFAS discharge evaluation.
+5. **Munnar High-Altitude Assessment (10.0889°N, 77.0595°E):** Demonstrates high-relief escarpment runoff ($1461\text{ m}$ elevation, $7.7^\circ$ slope) under intense monsoon cloudburst conditions.
+6. **Idukki Dam Catchment (9.8493°N, 76.9710°E):** Demonstrates steep hillslope ($27.9^\circ$) antecedent saturation lag during dry weather lulls.
+7. **Palakkad Inland Gap (10.7867°N, 76.6548°E):** Demonstrates baseflow normalization ($Q / \bar{Q}_{7d} = 0.95$) preventing dry riverbeds from triggering spurious flood alerts.
+8. **Ridgecrest Strike-Slip Fault (35.6225°N, -117.6709°W):** Demonstrates high tectonic fault proximity ($2.9\text{ km}$) elevating aftershock monitoring, coupled with Mojave Desert fire weather ($FWI = 28.4$).
+9. **Tokyo Bay Subduction Margin (35.6762°N, 139.6503°E):** Demonstrates conditional Omori-Utsu aftershock decay with Wells & Coppersmith spatial attenuation kernel $\rho(r)$ scaling with epicentral distance.
+10. **Zhengzhou Yellow River Basin (34.7466°N, 113.6253°E):** Demonstrates major continental river basin reach inundation modeling.
+11. **Tacloban Typhoon Corridor (11.2444°N, 125.0039°E):** Demonstrates active cyclonic proximity buffering ($D \le 1000\text{ km}$) and rapid intensification monitoring without inland elevation exclusions.
+12. **Paradise Chaparral WUI (39.7596°N, -121.6219°W):** Demonstrates Canadian FWI fire danger scaling in wildland-urban interface chaparral biomes.
+13. **Multi-Horizon Forecast Center (`/forecasts`):** Visualizes forward-looking trajectories and skill decay across 6h, 12h, 24h, 48h, and 72h horizons.
+14. **Prospective Prediction Archive (`/api/v1/geospatial/validation/archive`):** Inspects immutable SQLite WAL inference snapshots, timestamped coordinates, and verified prospective reliability metrics.
+
+---
+
 ## 22. Model Performance & Reproducibility
 
 Independently reproduced on the empirical holdout test partition ($N = 23,561$):
@@ -406,11 +432,12 @@ Phases 37 through 41 executed an independent scientific audit and rigorous mathe
    Removed the artificial 300m elevation cutoff, basing cyclonic hazard assessment directly on active storm proximity ($D_{\text{storm}} \le 1000\text{ km}$) and local NWP wind fields.
 6. **Prospective Prediction Archive & Outcome Verification (`prediction_archive_service.py`):**
    Maintains an immutable audit ledger of all inferences, evaluates predictions against subsequent real-world observations, and tracks empirical calibration drift (Brier Score = 0.0378, Hit Rate = 1.0, FAR = 0.0 on benchmark checkpoints).
-7. **Comprehensive Engineering & Audit Documentation:**
-   - [Phase 37 Scientific Audit Reports (8 reports)](reports/phase37/)
-   - [Phase 38 Model & Risk Engine Reports (7 reports)](reports/phase38/)
-   - [Phase 39 Prospective Validation Reports (5 reports)](reports/phase39/)
-   - [Phase 40 Security, Map & Quality Reports (6 reports)](reports/phase40/)
+7. **Consolidated Scientific Engineering Reports:**
+   - [Scientific Validation & Physical Hazard Formulations](reports/SCIENTIFIC_VALIDATION.md)
+   - [Model Evaluation, Governance & Quarantine Audit](reports/MODEL_EVALUATION.md)
+   - [API Integrations & Real-Time Data Quality](reports/API_AND_DATA_QUALITY.md)
+   - [Final Release & Verification Audit](reports/FINAL_RELEASE_VERIFICATION.md)
+   - [Project Cleanup & Repository Consolidation Summary](reports/PROJECT_CLEANUP_SUMMARY.md)
 
 ---
 
