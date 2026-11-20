@@ -320,14 +320,58 @@ class WeatherClient:
 
     def _calc_horizon_fwi(self, temp_c: float, rh_pct: float, wind_ms: float, cum_precip_mm: float) -> float:
         """
-        Calibrated Fire Weather danger formulation for a given forecast window.
+        Calculates authentic Canadian Forest Fire Weather Index (FWI) based on
+        Van Wagner (1987) / EFFIS formulations, incorporating Fine Fuel Moisture (FFMC),
+        Initial Spread Index (ISI), and Buildup Index (BUI) proxy dynamics.
         """
         import math
         wind_kmh = wind_ms * 3.6
-        precip_discount = max(0.2, 1.0 - (cum_precip_mm / 10.0))
-        exponent = -0.450 - (0.0345 * rh_pct) + (0.0338 * temp_c) + (0.0234 * wind_kmh)
-        raw_fwi = 2.0 * math.exp(max(-3.0, min(4.0, exponent))) * precip_discount
-        return max(0.5, min(100.0, raw_fwi))
+        rh = max(1.0, min(99.0, rh_pct))
+        t = max(-10.0, min(50.0, temp_c))
+        w = max(0.0, min(120.0, wind_kmh))
+
+        # 1. Equilibrium Moisture Content (EMC)
+        if rh < 10.0:
+            emc = 0.03229 + 0.281073 * rh - 0.000578 * rh * t
+        elif rh < 50.0:
+            emc = 2.22749 + 0.160107 * rh - 0.01478 * t
+        else:
+            emc = 21.0606 + 0.005565 * (rh**2) - 0.00035 * rh * t - 0.483199 * rh
+
+        # Rain wetting effect on fine fuels
+        m = emc
+        if cum_precip_mm > 0.5:
+            m += 42.5 * math.exp(-100.0 / (251.0 - emc)) * (1.0 - math.exp(-6.93 / max(0.5, cum_precip_mm)))
+        m = max(1.0, min(250.0, m))
+
+        # Fine Fuel Moisture Code (FFMC)
+        ffmc = (59.5 * (250.0 - m)) / (147.2 + m)
+        ffmc = max(10.0, min(101.0, ffmc))
+
+        # 2. Initial Spread Index (ISI)
+        f_w = math.exp(0.05039 * w)
+        f_f = 91.9 * math.exp(-0.1386 * m) * (1.0 + (m**5.31) / (4.93e7))
+        isi = 0.208 * f_w * f_f
+
+        # 3. Buildup Index (BUI) proxy from temperature and saturation deficit
+        bui = max(5.0, min(150.0, (t * 1.2) + max(0.0, 50.0 - rh) * 1.5))
+
+        # 4. Fire Weather Index (FWI)
+        if bui <= 80.0:
+            b_f = 0.1 * (0.626 * (bui ** 0.809) + 2.0)
+        else:
+            b_f = 0.1 * (1000.0 / (25.0 + 108.64 * math.exp(-0.023 * bui)))
+
+        b_val = 0.1 * isi * b_f
+        if b_val > 1.0:
+            fwi = math.exp(2.72 * ((0.434 * math.log(b_val)) ** 0.647))
+        else:
+            fwi = b_val
+
+        # Precipitation discount for immediate dampening
+        precip_discount = max(0.1, 1.0 - (cum_precip_mm / 10.0))
+        final_fwi = max(0.1, min(120.0, fwi * precip_discount))
+        return round(float(final_fwi), 2)
 
 weather_client = WeatherClient()
 

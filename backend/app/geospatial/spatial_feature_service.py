@@ -199,29 +199,20 @@ class SpatialFeatureService:
         omega = 7.2921159e-5
         f_coriolis = 2.0 * omega * math.sin(math.radians(lat))
 
-        # Check whether location is inland mountain (> 300m elevation) or inland continent
-        is_inland_highland = env.elevation_m > 300.0
-
         if "current_wind_kt" in ov:
             wind = float(ov["current_wind_kt"])
             pres = float(ov.get("current_pres_hpa", 996.0))
             dist_land = float(ov.get("dist_to_land_km", 85.0))
             speed = float(ov.get("translational_speed_kt", 11.5))
             head = float(ov.get("heading_degrees", 315.0))
-        elif is_inland_highland:
-            # Inland mountain regions (e.g. Wayanad, Himalayas) have zero maritime cyclone genesis / track danger
-            wind = 0.0
-            pres = 1013.25
-            dist_land = 500.0
-            speed = 0.0
-            head = 0.0
         else:
-            # Coastal / oceanic default
-            wind = 0.0
+            # Derive local wind from NWP 10m wind speed: 1 m/s = 1.94384 kt
+            local_wind_kt = round(env.wind_speed_10m_ms * 1.94384, 1)
+            wind = max(0.0, local_wind_kt)
             pres = 1013.25
-            dist_land = 200.0
-            speed = 0.0
-            head = 0.0
+            dist_land = 100.0
+            speed = 10.0
+            head = 315.0
 
         return CycloneFeatures(
             current_wind_kt=wind,
@@ -234,7 +225,7 @@ class SpatialFeatureService:
             translational_speed_kt=speed,
             heading_degrees=head,
             coriolis_param=round(f_coriolis, 7),
-            pot_intensity_headroom=float(ov.get("pot_intensity_headroom", 0.0))
+            pot_intensity_headroom=float(ov.get("pot_intensity_headroom", max(0.0, 150.0 - wind)))
         )
 
 spatial_feature_service = SpatialFeatureService()

@@ -527,7 +527,7 @@ class ForecastService:
 
         # Calculate Omori-Utsu statistical decay across horizons if mainshock occurred
         if has_mainshock:
-            omori_res = omori_model.forecast_horizons(nearest_mag, elapsed_hours)
+            omori_res = omori_model.forecast_horizons(nearest_mag, elapsed_hours, distance_km=nearest_dist_km or 0.0)
         else:
             omori_res = {
                 h: {"prob_m4_plus": 0.0, "prob_m5_plus": 0.0, "expected_m4_count": 0.0}
@@ -666,8 +666,9 @@ class ForecastService:
                     selected_storm = c
 
         env_context, _ = await spatial_feature_service.get_environmental_context(lat, lon)
-        is_inland_highland = env_context.elevation_m > 300.0 and min_dist_km > 300.0
-        has_active_threat = (selected_storm is not None) and (not is_inland_highland) and (min_dist_km <= 800.0)
+        # Cyclone threat is physically governed by active storm proximity (radius <= 1000 km)
+        # and synoptic wind fields, without an artificial elevation cutoff.
+        has_active_threat = (selected_storm is not None) and (min_dist_km <= 1000.0)
 
         curr_wind = float(selected_storm.intensity_kt) if (has_active_threat and selected_storm) else 0.0
         storm_name = selected_storm.name if (has_active_threat and selected_storm) else "None (No Active Cyclone)"

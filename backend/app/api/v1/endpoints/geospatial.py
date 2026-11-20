@@ -23,6 +23,8 @@ from backend.app.services.landslide_service import landslide_service
 from backend.app.services.earthquake_service import earthquake_service
 from backend.app.services.cyclone_service import cyclone_service
 from backend.app.services.wildfire_service import wildfire_service
+from backend.app.services.prediction_archive_service import prediction_archive_service
+from backend.app.integrations.cyclone_client import cyclone_client
 from backend.app.utils.logging_config import get_logger
 
 logger = get_logger("geospatial_api")
@@ -161,8 +163,21 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
 
         # 6. Evaluate Cyclones (Tropical / Subtropical Maritime Zones)
         if "cyclones" in hazards:
-            # Check proximity to coastline and elevation
-            if abs(lat) <= 45.0 and env_context.elevation_m <= 300.0:
+            # Query active cyclones to check if any storm is within threatening proximity (e.g. 1000 km)
+            active_storms = await cyclone_client.get_active_cyclones(limit=10)
+            nearest_storm = None
+            min_dist_km = 99999.0
+            if active_storms:
+                for s in active_storms:
+                    d = ((s.latitude - lat)**2 + (s.longitude - lon)**2)**0.5 * 111.0
+                    if d < min_dist_km:
+                        min_dist_km = d
+                        nearest_storm = s
+            
+            has_active_storm = (nearest_storm is not None) and (min_dist_km <= 1000.0)
+            has_overrides = "current_wind_kt" in overrides
+
+            if (abs(lat) <= 45.0 and has_active_storm) or has_overrides:
                 cy_feats = spatial_feature_service.build_cyclone_features(lat, lon, env_context, raw_bundles, overrides)
                 cy_resp = cyclone_service.predict(cy_feats)
                 assessments["cyclones"] = HazardAssessmentResult(
@@ -187,6 +202,7 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                     highest_severity = sev
                     highest_cat = cy_resp.alert_level
             else:
+                dist_str = f"Nearest active cyclonic system is {min_dist_km:.0f} km away." if min_dist_km < 9000 else "No active tropical cyclones in global tracking basins."
                 assessments["cyclones"] = HazardAssessmentResult(
                     hazard="cyclones",
                     model_name="cyclone_geographic_filter",
@@ -195,11 +211,11 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
                     calibrated_probability=0.0,
                     risk_category="LOW",
                     alert_level="GREEN",
-                    guidance="Inland continental/mountain location outside maritime tropical cyclone genesis and landfall zones.",
+                    guidance=f"No active tropical cyclone within 1000 km radius. {dist_str}",
                     operational_status="OPERATIONAL",
                     top_features=[],
                     defined_target="Tropical Cyclone Rapid Intensification (Delta V >= 30 kt in 24h)",
-                    confidence_or_uncertainty="High (Topological Inland Geographic Exclusion)",
+                    confidence_or_uncertainty="High (Synoptic Basin Tracking Exclusion)",
                     data_sources=["NOAA NHC / IMD Bulletins"],
                     data_freshness="LIVE"
                 )
@@ -214,6 +230,25 @@ async def assess_location_risk(request: GeospatialAssessmentRequest) -> Geospati
         )
 
         loc_name = f"Geographic Coordinate ({lat:.4f}, {lon:.4f})"
+
+        # Asynchronously record prediction snapshots into prospective validation archive
+        try:
+            for haz_k, a_res in assessments.items():
+                prediction_archive_service.record_prediction(
+                    hazard_type=haz_k,
+                    lat=lat,
+                    lon=lon,
+                    model_name=a_res.model_name,
+                    model_version="1.0.0",
+                    features={"top_features": a_res.top_features},
+                    raw_score=a_res.probability,
+                    calibrated_prob=a_res.calibrated_probability,
+                    risk_category=a_res.risk_category,
+                    alert_level=a_res.alert_level,
+                    location_name=loc_name
+                )
+        except Exception as arch_err:
+            logger.warning(f"Failed to record prediction snapshot in archive: {arch_err}")
 
         return GeospatialAssessmentResponse(
             latitude=round(lat, 4),
@@ -650,5 +685,32 @@ async def geocode_locations(
     except Exception as e:
         logger.error(f"Error executing geocode query for '{q}': {e}")
         return LocationSearchResponse(query=q, count=0, results=[])
+
+@router.get("/validation/archive")
+def get_prediction_archive(
+    hazard: Optional[str] = Query(None, description="Filter by hazard"),
+    status: Optional[str] = Query(None, description="Filter by status (PENDING, VERIFIED_HIT, etc.)"),
+    limit: int = Query(50, ge=1, le=200)
+) -> Dict[str, Any]:
+    """
+    Returns recent prediction archive snapshots for prospective validation audit.
+    """
+    records = prediction_archive_service.get_recent_predictions(limit=limit, hazard=hazard, status=status)
+    return {
+        "count": len(records),
+        "hazard_filter": hazard,
+        "status_filter": status,
+        "predictions": records
+    }
+
+@router.get("/validation/reliability")
+def get_reliability_metrics(
+    hazard: Optional[str] = Query(None, description="Filter by hazard")
+) -> Dict[str, Any]:
+    """
+    Returns empirical prospective calibration metrics: Brier score, hit rate, and false alarm rate.
+    """
+    return prediction_archive_service.compute_reliability_metrics(hazard_type=hazard)
+
 
 

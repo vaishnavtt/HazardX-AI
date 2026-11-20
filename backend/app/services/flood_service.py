@@ -52,7 +52,32 @@ class FloodService:
             
         # 4. Risk Category & Guidance
         risk_cat, alert_lvl, guidance = categorize_hazard_risk(self.hazard, raw_prob)
-        
+
+        warnings = [
+            "Model trained on 1:1 case-control historical disasters; raw_model_score represents relative environmental susceptibility.",
+            "Calibrated susceptibility reflects daily empirical occurrence odds under local hydrological conditions.",
+            "ECMWF ERA5 28km resolution models regional river basin inundation; hyper-local urban cloudbursts require radar precipitation networks."
+        ]
+
+        # Hydrological discharge anomaly and rainfall reconciliation:
+        # If river discharge is at or below baseline (ratio <= 1.25) and recent rain is low (3d < 15mm, 1d < 5mm),
+        # river reach is quiescent, so raw topographic susceptibility should not generate false alerts.
+        q_ratio = float(features.river_discharge_ratio_7d)
+        p_1d = float(features.precip_1d_mm)
+        p_3d = float(features.precip_3d_sum_mm)
+
+        if q_ratio <= 1.25 and p_1d < 5.0 and p_3d < 15.0 and alert_lvl != "GREEN":
+            risk_cat = "LOW"
+            alert_lvl = "GREEN"
+            guidance = f"Hydrological status normal (river discharge anomaly ratio {q_ratio:.2f}x baseline; 24h rain {p_1d:.1f} mm). Fluvial inundation threat is low."
+            warnings.append("Hydrological baseline reconciliation: normal river discharge and minimal rainfall keep flood threat at baseline despite floodplain terrain proximity.")
+        elif q_ratio >= 2.0 or p_1d >= 75.0:
+            if alert_lvl in ["GREEN", "YELLOW"]:
+                risk_cat = "HIGH"
+                alert_lvl = "ORANGE"
+                guidance = f"Significant hydrological surge detected (discharge ratio {q_ratio:.2f}x baseline, 24h rain {p_1d:.1f} mm). River reach approaching or exceeding bankfull capacity."
+                warnings.append("Hydrological surge detected: discharge ratio significantly exceeds 7-day baseline.")
+
         # 5. Real-Time TreeSHAP Explanation
         attributions = explanation_service.explain_prediction(
             model_key="floods_flood_occurrence",
@@ -61,12 +86,6 @@ class FloodService:
             is_binary=True,
             top_k=5
         )
-        
-        warnings = [
-            "Model trained on 1:1 case-control historical disasters; raw_model_score represents relative environmental susceptibility.",
-            "Calibrated susceptibility reflects daily empirical occurrence odds under local hydrological conditions.",
-            "ECMWF ERA5 28km resolution models regional river basin inundation; hyper-local urban cloudbursts require radar precipitation networks."
-        ]
         
         return FloodPredictionResponse(
             hazard_name="Floods",

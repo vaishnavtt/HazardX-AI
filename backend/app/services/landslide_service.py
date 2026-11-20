@@ -51,7 +51,31 @@ class LandslideService:
             
         # 4. Risk Category & Guidance
         risk_cat, alert_lvl, guidance = categorize_hazard_risk(self.hazard, raw_prob)
-        
+
+        warnings = [
+            "Model models precipitation-induced slope instability; earthquake-triggered failures require peak ground acceleration (PGA).",
+            "Trained on balanced case-control samples; raw score represents relative hillslope susceptibility.",
+            "Copernicus DEM 90m slope gradient represents macro-topography; local road embankment cuts may have localized steeper micro-slopes."
+        ]
+
+        # Scientific antecedent saturation and terrain slope reconciliation:
+        # Steep slopes (>= 20 deg) with heavy 7d (>= 100mm) or 30d (>= 250mm) antecedent rain
+        # maintain elevated pore-water pressures and instability even during a short 24h dry lull.
+        is_steep = float(features.slope_degrees) >= 20.0
+        is_saturated = (float(features.precip_7d_sum_mm) >= 100.0) or (float(features.precip_30d_sum_mm) >= 250.0)
+        is_flat = float(features.slope_degrees) < 10.0
+
+        if is_flat and alert_lvl != "GREEN":
+            risk_cat = "LOW"
+            alert_lvl = "GREEN"
+            guidance = "Gentle/flat terrain (< 10° slope) has minimal mass-wasting susceptibility regardless of antecedent precipitation."
+            warnings.append("Topographic gradient reconciliation: gentle/flat slope (< 10°) provides natural geomorphic resistance to mass movement.")
+        elif is_steep and is_saturated and alert_lvl == "GREEN":
+            risk_cat = "MODERATE"
+            alert_lvl = "YELLOW"
+            guidance = "Elevated antecedent precipitation has saturated steep hillslope terrain; delayed pore-water pressure release maintains localized slope instability risk even during dry lull."
+            warnings.append("Antecedent hillslope saturation override active: high cumulative rainfall creates residual landslide hazard despite low 24h precipitation.")
+
         # 5. Real-Time TreeSHAP Explanation
         attributions = explanation_service.explain_prediction(
             model_key="landslides_landslide_occurrence",
@@ -60,12 +84,6 @@ class LandslideService:
             is_binary=True,
             top_k=5
         )
-        
-        warnings = [
-            "Model models precipitation-induced slope instability; earthquake-triggered failures require peak ground acceleration (PGA).",
-            "Trained on balanced case-control samples; raw score represents relative hillslope susceptibility.",
-            "Copernicus DEM 90m slope gradient represents macro-topography; local road embankment cuts may have localized steeper micro-slopes."
-        ]
         
         return LandslidePredictionResponse(
             hazard_name="Landslides",

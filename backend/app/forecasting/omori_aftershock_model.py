@@ -28,12 +28,25 @@ class OmoriAftershockForecaster:
         mainshock_mag: float,
         target_mag: float,
         time_since_mainshock_days: float,
-        forecast_window_days: float
+        forecast_window_days: float,
+        distance_km: float = 0.0
     ) -> Dict[str, Any]:
         """
         Calculates expected rate lambda and Poisson probability P(N >= 1) of an aftershock
-        with magnitude >= target_mag in the future window [t, t + delta_t].
+        with magnitude >= target_mag in the future window [t, t + delta_t] at distance r.
+        Includes USGS/Kagan-style spatial distance attenuation kernel.
         """
+        if mainshock_mag < 4.0:
+            return {
+                "mainshock_mag": round(mainshock_mag, 2),
+                "target_mag": round(target_mag, 2),
+                "distance_km": round(distance_km, 1),
+                "time_since_mainshock_days": round(time_since_mainshock_days, 3),
+                "forecast_window_days": round(forecast_window_days, 3),
+                "expected_count": 0.0,
+                "probability": 0.0
+            }
+
         t = max(0.001, time_since_mainshock_days)
         dt = max(0.001, forecast_window_days)
 
@@ -46,23 +59,33 @@ class OmoriAftershockForecaster:
         else:
             integral = ((t + dt + self.c) ** (1.0 - self.p) - (t + self.c) ** (1.0 - self.p)) / (1.0 - self.p)
 
-        expected_count = max(0.0, k_val * integral)
-        prob = 1.0 - math.exp(-expected_count)
-        prob = max(0.0001, min(0.9999, prob))
+        # Spatial distance attenuation kernel rho(r) = 1 / (1 + (r / r0)^2)
+        # r0 scales with fault rupture length L(Mw) ~ 10^(-2.0 + 0.5 * Mw) (Wells & Coppersmith 1994)
+        r0 = max(2.0, 10.0 ** (-2.0 + 0.5 * mainshock_mag))
+        spatial_weight = 1.0 / (1.0 + (distance_km / r0) ** 2)
+
+        expected_count = max(0.0, k_val * integral * spatial_weight)
+        
+        if expected_count < 1e-6:
+            prob = 0.0
+        else:
+            prob = 1.0 - math.exp(-expected_count)
+            prob = min(0.9999, prob)
 
         return {
             "mainshock_mag": round(mainshock_mag, 2),
             "target_mag": round(target_mag, 2),
+            "distance_km": round(distance_km, 1),
             "time_since_mainshock_days": round(t, 3),
             "forecast_window_days": round(dt, 3),
-            "expected_count": round(expected_count, 3),
+            "expected_count": round(expected_count, 4),
             "probability": round(prob, 4)
         }
 
-    def forecast_horizons(self, mainshock_mag: float, elapsed_hours: float = 2.0) -> Dict[str, Any]:
+    def forecast_horizons(self, mainshock_mag: float, elapsed_hours: float = 2.0, distance_km: float = 0.0) -> Dict[str, Any]:
         """
         Calculates aftershock probabilities across standard forecast horizons: 6h, 12h, 24h, 48h, 72h
-        for M4.0+ and M5.0+ aftershocks.
+        for M4.0+ and M5.0+ aftershocks at a given epicentral distance.
         """
         t_days = max(0.01, elapsed_hours / 24.0)
         horizons_map = {
@@ -75,17 +98,22 @@ class OmoriAftershockForecaster:
 
         results = {}
         for h_name, dt_days in horizons_map.items():
-            m4_calc = self.calculate_aftershock_probability(mainshock_mag, 4.0, t_days, dt_days)
-            m5_calc = self.calculate_aftershock_probability(mainshock_mag, 5.0, t_days, dt_days)
+            m4_calc = self.calculate_aftershock_probability(mainshock_mag, 4.0, t_days, dt_days, distance_km=distance_km)
+            m5_calc = self.calculate_aftershock_probability(mainshock_mag, 5.0, t_days, dt_days, distance_km=distance_km)
 
             p_m4 = m4_calc["probability"]
-            risk_cat = (
-                "EXTREME" if p_m4 >= 0.80 else
-                "VERY HIGH" if p_m4 >= 0.60 else
-                "HIGH" if p_m4 >= 0.40 else
-                "MODERATE" if p_m4 >= 0.20 else
-                "LOW"
-            )
+            if mainshock_mag < 4.0 or p_m4 < 0.05:
+                risk_cat = "QUIESCENT"
+            elif p_m4 >= 0.80:
+                risk_cat = "EXTREME"
+            elif p_m4 >= 0.60:
+                risk_cat = "VERY HIGH"
+            elif p_m4 >= 0.40:
+                risk_cat = "HIGH"
+            elif p_m4 >= 0.20:
+                risk_cat = "MODERATE"
+            else:
+                risk_cat = "LOW"
 
             results[h_name] = {
                 "horizon": h_name,
@@ -94,7 +122,8 @@ class OmoriAftershockForecaster:
                 "expected_m4_count": m4_calc["expected_count"],
                 "risk_score": p_m4,
                 "risk_category": risk_cat,
-                "model_type": "Omori-Utsu / Reasenberg-Jones Statistical Decay",
+                "distance_km": round(distance_km, 1),
+                "model_type": "Omori-Utsu / Reasenberg-Jones Spatial & Temporal Decay",
                 "disclaimer": "Probabilistic aftershock assessment following mainshock. NOT an exact earthquake prediction."
             }
 
